@@ -139,6 +139,8 @@ const HEALTHCARE_SCOPES = ['CNA', 'LPN', 'RN', 'NP', 'Unit Secretary', 'HR Manag
 export const SITES_DATA: SiteData[] = [
   {
     site: { id: 'sunnyvale', name: 'Sunnyvale Care', isPrimary: true },
+    yourTitle: 'HR Manager',
+    ladderAbove: ['Corporate Director', 'Regional VP'],
     permissions: {
       siteId: 'sunnyvale',
       onboard: {
@@ -172,6 +174,8 @@ export const SITES_DATA: SiteData[] = [
   },
   {
     site: { id: 'monmouth', name: 'Monmouth Builders', isPrimary: false },
+    yourTitle: 'Area Director',
+    ladderAbove: ['Regional East VP', 'COO'],
     permissions: {
       siteId: 'monmouth',
       onboard: {
@@ -202,6 +206,8 @@ export const SITES_DATA: SiteData[] = [
   },
   {
     site: { id: 'healthcare', name: 'Healthcare Solutions', isPrimary: false },
+    yourTitle: 'Site Coordinator',
+    ladderAbove: ['National Director', 'Regional Lead'],
     permissions: {
       siteId: 'healthcare',
       onboard: {

@@ -13,9 +13,8 @@ import {
   IconChevronLeft,
   IconTicket,
 } from './icons'
-import { PermissionsTable } from './components/PermissionsTable'
+import { MyPermissionsPage } from './components/PermissionsCard'
 import { QuickCheck } from './components/QuickCheck'
-import { SiteTree } from './components/SiteTree'
 
 // ─── Sidebar ────────────────────────────────────────────────────────────────
 
@@ -124,35 +123,93 @@ interface SiteTabsProps {
 
 function SiteTabs({ sites, activeId, onChange }: SiteTabsProps) {
   return (
-    <div className="flex items-center justify-between mb-6">
-      <div className="flex items-center gap-3">
-        <span className="text-sm text-gray-500 font-medium">Site:</span>
-        <div className="flex items-center gap-1">
-          {sites.map((sd) => (
-            <button
-              key={sd.site.id}
-              onClick={() => onChange(sd.site.id)}
-              className={`px-3.5 py-1.5 text-sm rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 ${
-                sd.site.id === activeId
-                  ? 'bg-white border border-gray-300 font-medium text-gray-900 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-800 font-normal'
-              }`}
-            >
-              {sd.site.name}
-            </button>
-          ))}
-        </div>
-      </div>
-      <span className="text-xs text-gray-400 italic">
-        Your permissions can differ at each site.
-      </span>
+    <div
+      style={{
+        display: 'flex',
+        gap: 4,
+        borderBottom: '0.5px solid #e0e0e0',
+        marginBottom: 0,
+      }}
+    >
+      {sites.map((sd) => {
+        const isActive = sd.site.id === activeId
+        const dotColor = isActive
+          ? sd.site.isPrimary
+            ? '#639922'
+            : '#378ADD'
+          : '#D1D5DB'
+
+        return (
+          <button
+            key={sd.site.id}
+            onClick={() => onChange(sd.site.id)}
+            style={{
+              fontSize: 12,
+              padding: '7px 14px',
+              borderRadius: '8px 8px 0 0',
+              border: isActive ? '0.5px solid #e0e0e0' : '0.5px solid transparent',
+              borderBottom: isActive ? '0.5px solid #fff' : '0.5px solid transparent',
+              background: isActive ? '#fff' : 'none',
+              cursor: 'pointer',
+              color: isActive ? '#1a1a1a' : '#6B7280',
+              fontWeight: isActive ? 500 : 400,
+              marginBottom: '-0.5px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              transition: 'background 0.15s, color 0.15s',
+              outline: 'none',
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) {
+                const btn = e.currentTarget as HTMLButtonElement
+                btn.style.background = '#fff'
+                btn.style.color = '#1a1a1a'
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) {
+                const btn = e.currentTarget as HTMLButtonElement
+                btn.style.background = 'none'
+                btn.style.color = '#6B7280'
+              }
+            }}
+          >
+            {/* Dot */}
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: dotColor,
+                flexShrink: 0,
+              }}
+            />
+            {sd.site.name}
+            {/* Primary badge */}
+            {sd.site.isPrimary && (
+              <span
+                style={{
+                  fontSize: 9,
+                  fontWeight: 500,
+                  padding: '1px 5px',
+                  borderRadius: 3,
+                  background: '#E6F1FB',
+                  color: '#185FA5',
+                  border: '0.5px solid #B5D4F4',
+                }}
+              >
+                Primary
+              </span>
+            )}
+          </button>
+        )
+      })}
     </div>
   )
 }
 
 // ─── Permissions Page ────────────────────────────────────────────────────────
-
-const USER_FIRST_NAME = 'Guy'
 
 export default function App() {
   const primaryId = SITES_DATA.find((s) => s.site.isPrimary)?.site.id ?? SITES_DATA[0].site.id
@@ -160,29 +217,17 @@ export default function App() {
 
   const activeSiteData = SITES_DATA.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
 
-  function handleAskAdmin(action?: string) {
-    const subject = encodeURIComponent(
-      action ? `Access request: ${action}` : 'Permission inquiry'
-    )
-    const body = encodeURIComponent(
-      action
-        ? `Hi,\n\nI'd like to request access to handle ${action} at ${activeSiteData.site.name}.\n\nThanks`
-        : `Hi,\n\nI have a question about my permissions at ${activeSiteData.site.name}.\n\nThanks`
-    )
-    window.open(`mailto:admin@cubx.com?subject=${subject}&body=${body}`)
+  function handleAskAdmin() {
+    window.open(`mailto:admin@cubx.com?subject=${encodeURIComponent('Permission inquiry')}`)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ background: '#FAFAFB' }}>
       <Sidebar />
 
-      {/* Main content area */}
       <main className="ml-16 min-h-screen">
-        <div className="max-w-5xl mx-auto px-8 py-8">
+        <div className="px-8 py-8">
           <TopBar onAskAdmin={handleAskAdmin} />
-
-          {/* Page heading */}
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Your permissions</h1>
 
           {/* Site tabs */}
           <SiteTabs
@@ -191,24 +236,14 @@ export default function App() {
             onChange={setActiveSiteId}
           />
 
-          {/* Three sections */}
-          <div className="space-y-6">
-            <PermissionsTable
-              siteName={activeSiteData.site.name}
-              permissions={activeSiteData.permissions}
-              userName={USER_FIRST_NAME}
-            />
+          {/* Permissions page */}
+          <MyPermissionsPage siteData={activeSiteData} />
 
-            <QuickCheck
-              activeSiteId={activeSiteId}
-              sitesData={SITES_DATA}
-            />
-
-            <SiteTree
-              siteName={activeSiteData.site.name}
-              nodes={activeSiteData.tree}
-            />
+          {/* Quick Check */}
+          <div style={{ maxWidth: 820, margin: '0 auto' }}>
+            <QuickCheck activeSiteId={activeSiteId} sitesData={SITES_DATA} />
           </div>
+
         </div>
       </main>
     </div>

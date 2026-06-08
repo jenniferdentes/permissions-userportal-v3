@@ -45,4 +45,6 @@ export interface SiteData {
   site: Site
   permissions: SitePermissions
   tree: TreeNode[]
+  yourTitle: string
+  ladderAbove: string[]
 }

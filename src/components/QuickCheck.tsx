@@ -21,9 +21,9 @@ const QUICK_CHECK_ACTIONS: { value: QuickCheckAction; label: string }[] = [
 // Actions where the person already exists in the system — show By Name tab
 const PERSON_PICKER_ACTIONS = new Set<QuickCheckAction>(['edit', 'offboard', 'approve_edit', 'approve_offboard'])
 
-function checkAccess(action: QuickCheckAction, jobTitle: string, siteId: string, sitesData: SiteData[]): boolean {
+function checkAccess(action: QuickCheckAction, jobTitle: string, siteId: string, sitesData: SiteData[]): 'allowed' | 'partial' | 'blocked' {
   const site = sitesData.find((s) => s.site.id === siteId)
-  if (!site) return false
+  if (!site) return 'blocked'
   const permMap: Record<QuickCheckAction, { can: boolean; scopes: string[] }> = {
     onboard:         { can: site.permissions.onboard.canPerform,  scopes: site.permissions.onboard.performScopes },
     edit:            { can: site.permissions.edit.canPerform,     scopes: site.permissions.edit.performScopes },
@@ -33,7 +33,9 @@ function checkAccess(action: QuickCheckAction, jobTitle: string, siteId: string,
     approve_offboard:{ can: site.permissions.offboard.canApprove, scopes: site.permissions.offboard.approveScopes },
   }
   const { can, scopes } = permMap[action]
-  return can && scopes.includes(jobTitle)
+  if (!can) return 'blocked'
+  if (scopes.length > 0 && !scopes.includes(jobTitle)) return 'partial'
+  return 'allowed'
 }
 
 // ─── Action select ────────────────────────────────────────────────────────────
@@ -323,7 +325,7 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
   const [jobTitle, setJobTitle] = useState('')
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const [siteId, setSiteId] = useState(activeSiteId)
-  const [result, setResult] = useState<boolean | null>(null)
+  const [result, setResult] = useState<'allowed' | 'partial' | 'blocked' | null>(null)
   const [checked, setChecked] = useState(false)
 
   const showPersonPicker = PERSON_PICKER_ACTIONS.has(action)
@@ -417,12 +419,23 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
 
       {checked && result !== null && (
         <div className="mt-4 flex items-center gap-2">
-          {result ? (
+          {result === 'allowed' && (
             <>
               <span className="w-2 h-2 rounded-full bg-green-500 flex-shrink-0" />
               <span className="text-sm text-green-700 font-medium">Yes, you can do this.</span>
             </>
-          ) : (
+          )}
+          {result === 'partial' && (
+            <>
+              <span className="w-2 h-2 rounded-full bg-orange-400 flex-shrink-0" />
+              <span className="text-sm text-orange-700">
+                You have the action but <strong>{jobTitle}</strong> isn't in your scope for this.{' '}
+                <a href={adminHref} className="font-medium underline hover:text-orange-800">Talk to your admin</a>
+                {' '}to expand your scope.
+              </span>
+            </>
+          )}
+          {result === 'blocked' && (
             <>
               <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0" />
               <span className="text-sm text-red-600">
