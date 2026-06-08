@@ -44,7 +44,7 @@ export function buildCardData(siteData: SiteData): CardData[] {
     {
       icon: 'person_add',
       title: 'Onboard a user',
-      desc: 'Add new employees to the system',
+      desc: 'Bring someone new onto your team',
       perform: {
         allowed: permissions.onboard.canPerform,
         groups: permissions.onboard.canPerform ? [
@@ -63,7 +63,7 @@ export function buildCardData(siteData: SiteData): CardData[] {
     {
       icon: 'person_remove',
       title: 'Offboard a user',
-      desc: 'Terminate employees from the system',
+      desc: "End a person's employment",
       perform: {
         allowed: permissions.offboard.canPerform,
         groups: permissions.offboard.canPerform ? [
@@ -82,7 +82,7 @@ export function buildCardData(siteData: SiteData): CardData[] {
     {
       icon: 'person_edit',
       title: 'Edit a user',
-      desc: 'Update profiles, roles, and access',
+      desc: "Change a person's record",
       perform: {
         allowed: permissions.edit.canPerform,
         groups: permissions.edit.canPerform ? [
@@ -221,10 +221,10 @@ function PermColumn({ label, perm }: { label: string; perm: PermCol }) {
             borderRadius: 'var(--radius-pill)',
             font: '600 0.8125rem/1.125rem var(--font-inter)',
             whiteSpace: 'nowrap',
-            background: '#F1F3F5',
-            color: '#6B7280',
+            background: '#FEE2E2',
+            color: '#B91C1C',
           }}>
-            <span className="ico" style={{ fontSize: 15, color: '#98A2B3' }}>close</span>
+            <span className="ico" style={{ fontSize: 15, color: '#EF4444' }}>close</span>
             No permission
           </div>
         )}
