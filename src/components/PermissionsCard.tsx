@@ -11,8 +11,8 @@ interface ActionInfo {
 }
 
 const ACTIONS: ActionInfo[] = [
-  { key: 'onboard',  icon: 'person_add',      title: 'Onboard a user',  desc: 'Create new employees' },
-  { key: 'offboard', icon: 'person_remove',    title: 'Offboard a user', desc: 'Terminate employees' },
+  { key: 'onboard',  icon: 'person_add',      title: 'Onboard a user',  desc: 'Bring someone new onto your team' },
+  { key: 'offboard', icon: 'person_remove',    title: 'Offboard a user', desc: "End a person's employment" },
   { key: 'edit',     icon: 'manage_accounts',  title: 'Edit a user',     desc: 'Update profiles & roles' },
 ]
 
@@ -26,7 +26,7 @@ function JobChips({ jobs }: { jobs: string[] }) {
   const chipBase: React.CSSProperties = {
     display: 'inline-flex', alignItems: 'center',
     padding: '3px 10px', borderRadius: 'var(--radius-pill)',
-    font: '500 0.8125rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
+    font: '500 0.75rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
   }
 
   if (jobs.length === 1 && jobs[0] === 'All job titles') {
@@ -39,14 +39,14 @@ function JobChips({ jobs }: { jobs: string[] }) {
     )
   }
 
-  const preview = 4
+  const preview = 8
   const hidden = jobs.length - preview
   const visible = showAll ? jobs : jobs.slice(0, preview)
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
       {visible.map((j) => (
-        <span key={j} style={{ ...chipBase, border: '1px solid var(--secondary-outlined-border)', background: 'var(--bg-default)', color: 'var(--secondary)' }}>
+        <span key={j} style={{ ...chipBase, border: '1px solid #d0d5dd', background: 'var(--bg-default)', color: 'var(--secondary)' }}>
           {j}
         </span>
       ))}
@@ -75,45 +75,53 @@ interface ActionCardProps {
 function ActionCard({ action, allowed, jobs }: ActionCardProps) {
   return (
     <div style={{
-      borderRadius: 'var(--radius-base)',
-      border: `1px solid ${allowed ? '#CFE9D7' : 'var(--divider)'}`,
+      flex: '1 0 0',
+      borderRadius: 12,
+      border: '1px solid #eaecf0',
       padding: 18,
       display: 'flex', flexDirection: 'column',
-      background: allowed ? 'var(--bg-default)' : 'var(--bg-paper-elev-1)',
+      background: allowed ? 'var(--bg-default)' : '#fcfbfd',
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{
-          flexShrink: 0, width: 40, height: 40, borderRadius: 10,
+          flexShrink: 0, width: 36, height: 36, borderRadius: 8,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: allowed ? '#E7F4EA' : 'var(--bg-default)',
+          background: allowed ? '#E7F4EA' : 'var(--bg-paper-elev-1)',
           color: allowed ? '#1B7A43' : 'var(--icon-subtle)',
           border: allowed ? 'none' : '1px solid var(--divider)',
         }}>
-          <span className="ico" style={{ fontSize: 22 }}>{action.icon}</span>
+          <span className="ico" style={{ fontSize: 20 }}>{action.icon}</span>
         </div>
         <div>
           <h3 style={{
             margin: 0, font: 'var(--type-subtitle1)', letterSpacing: 'var(--type-subtitle1-tracking)',
-            color: allowed ? 'var(--fg-1)' : 'var(--fg-2)',
+            color: allowed ? 'var(--fg-1)' : '#616a7e',
           }}>{action.title}</h3>
-          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: 'var(--fg-2)' }}>{action.desc}</p>
+          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: allowed ? 'var(--fg-2)' : '#9aa2b2' }}>{action.desc}</p>
         </div>
       </div>
 
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         font: '600 0.8125rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
-        color: allowed ? '#1B7A43' : 'var(--fg-disabled)',
+        color: allowed ? '#084c2e' : '#9aa2b2',
       }}>
-        <span className="ico" style={{ fontSize: 17 }}>{allowed ? 'check_circle' : 'lock'}</span>
-        {allowed ? 'You can do this' : 'Not available to you'}
+        <span className="ico" style={{ fontSize: 17, color: allowed ? '#2E9E5B' : '#9aa2b2' }}>
+          {allowed ? 'check_circle' : 'do_not_disturb_on'}
+        </span>
+        {allowed ? 'You can do this' : 'Not available for you'}
       </div>
 
       {allowed && (
         <>
           <div style={{ height: 1, background: 'var(--divider)', margin: '14px 0' }} />
-          <div style={{ font: 'var(--type-caption)', letterSpacing: 'var(--type-caption-tracking)', color: 'var(--fg-2)', marginBottom: 8 }}>
-            For these job titles
+          <div style={{
+            font: '400 0.75rem/1.66rem var(--font-inter)',
+            letterSpacing: '0.4px',
+            color: 'var(--fg-1)',
+            marginBottom: 8,
+          }}>
+            For people with these job titles
           </div>
           <JobChips jobs={jobs} />
         </>
@@ -134,7 +142,7 @@ interface SectionProps {
 
 function Section({ icon, title, subtitle, mode, siteData }: SectionProps) {
   return (
-    <div style={{ marginBottom: 38 }}>
+    <div style={{ marginBottom: 24 }}>
       <div style={{ marginBottom: 16 }}>
         <h2 style={{
           margin: '0 0 3px',
@@ -147,7 +155,7 @@ function Section({ icon, title, subtitle, mode, siteData }: SectionProps) {
         </h2>
         <p style={{ margin: 0, font: 'var(--type-body2)', color: 'var(--fg-2)' }}>{subtitle}</p>
       </div>
-      <div className="acard-grid">
+      <div className="perm-cards-row">
         {ACTIONS.map((action) => {
           const perm = siteData.permissions[action.key]
           const allowed = mode === 'perform' ? perm.canPerform : perm.canApprove

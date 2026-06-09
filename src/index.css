@@ -58,17 +58,17 @@
   display: inline-block;
 }
 
-/* ─── Action card grid ──────────────────────────────────────────────────────── */
-.acard-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
+/* ─── Permission card row ───────────────────────────────────────────────────── */
+.perm-cards-row {
+  display: flex;
+  gap: 24px;
 }
 @media (max-width: 860px) {
-  .acard-grid { grid-template-columns: repeat(2, 1fr); }
+  .perm-cards-row { flex-wrap: wrap; }
+  .perm-cards-row > * { flex: 1 1 calc(50% - 12px); min-width: 200px; }
 }
 @media (max-width: 560px) {
-  .acard-grid { grid-template-columns: 1fr; }
+  .perm-cards-row > * { flex: 1 1 100%; }
 }
 
 @layer base {
