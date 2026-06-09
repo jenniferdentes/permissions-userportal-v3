@@ -45,12 +45,10 @@ function NavItem({ icon, label, active, muted }: NavItemProps) {
 function Sidebar() {
   return (
     <aside className="hidden md:flex fixed inset-y-0 left-0 w-16 bg-white border-r border-gray-200 flex-col items-center py-4 z-30">
-      {/* Logo */}
       <div className="mb-3">
         <CubXLogo className="w-8 h-8" />
       </div>
 
-      {/* Collapse toggle */}
       <button
         title="Collapse sidebar"
         className="w-8 h-8 flex items-center justify-center rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-50 mb-4 transition-colors"
@@ -58,7 +56,6 @@ function Sidebar() {
         <IconChevronLeft className="w-4 h-4" />
       </button>
 
-      {/* Main nav */}
       <nav className="flex flex-col gap-1 w-full px-2">
         <NavItem icon={<IconHome className="w-5 h-5" />} label="Home" active />
         <NavItem icon={<IconShield className="w-5 h-5" />} label="Quarantine" />
@@ -67,7 +64,6 @@ function Sidebar() {
         <NavItem icon={<IconGrid className="w-5 h-5" />} label="Apps" />
       </nav>
 
-      {/* Company Tools section */}
       <div className="mt-4 w-full px-2">
         <p className="text-[9px] font-semibold tracking-widest text-gray-400 uppercase text-center mb-1 leading-tight">
           Company<br />Tools
@@ -136,58 +132,107 @@ function TopBar({ onAskAdmin }: { onAskAdmin: () => void }) {
   )
 }
 
-// ─── Site Selector (ButtonGroup) ─────────────────────────────────────────────
+// ─── Identity Bar ────────────────────────────────────────────────────────────
 
-interface SiteSelectorProps {
+function IdentityBar({ yourTitle }: { yourTitle: string }) {
+  return (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 14,
+      padding: '14px 18px',
+      background: 'var(--bg-default)',
+      border: '1px solid var(--divider)',
+      borderRadius: 'var(--radius-base)',
+      margin: '22px 0 28px',
+      flexWrap: 'wrap',
+    }}>
+      <div style={{
+        flexShrink: 0, width: 44, height: 44, borderRadius: '50%',
+        background: 'var(--avatar-periwinkle-bg)', color: 'var(--avatar-periwinkle-fg)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        font: '600 1rem/1 var(--font-inter)', letterSpacing: '0.01em',
+      }}>GH</div>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+        <span style={{ font: 'var(--type-subtitle1)', letterSpacing: 'var(--type-subtitle1-tracking)', color: 'var(--fg-1)' }}>
+          Grace Hopper
+        </span>
+        <span style={{ font: 'var(--type-body2)', color: 'var(--fg-2)' }}>
+          Your access comes from the <strong style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{yourTitle}</strong> role
+        </span>
+      </div>
+      <span style={{
+        marginLeft: 'auto',
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        padding: '5px 12px', borderRadius: 'var(--radius-pill)',
+        background: 'var(--brand-50)', border: '1px solid var(--brand-200)',
+        color: 'var(--brand-600)', font: '600 0.8125rem/1.125rem var(--font-inter)',
+        whiteSpace: 'nowrap', flexShrink: 0,
+      }}>
+        <span className="ico" style={{ fontSize: 16 }}>badge</span>
+        {yourTitle}
+      </span>
+    </div>
+  )
+}
+
+// ─── Site Tabs ───────────────────────────────────────────────────────────────
+
+interface SiteTabsProps {
   sites: SiteData[]
   activeId: string
   onChange: (id: string) => void
 }
 
-function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
+function SiteTabs({ sites, activeId, onChange }: SiteTabsProps) {
   return (
-    <div style={{
-      display: 'inline-flex',
-      border: '1px solid rgba(50,55,103,0.3)',
-      borderRadius: 8,
-      overflow: 'hidden',
-    }}>
-      {sites.map((sd, i) => {
-        const isActive = sd.site.id === activeId
-        return (
-          <button
-            key={sd.site.id}
-            onClick={() => onChange(sd.site.id)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              padding: '6px 16px',
-              background: isActive ? '#e8e9f2' : '#fff',
-              color: isActive ? '#323767' : '#3a3e75',
-              font: '500 0.875rem/1.5rem var(--font-inter)',
-              border: 'none',
-              borderLeft: i > 0 ? '1px solid rgba(50,55,103,0.3)' : 'none',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              transition: 'background var(--duration-shortest) var(--easing-standard)',
-            }}
-            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f3f3f8' }}
-            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = '#fff' }}
-          >
-            {sd.site.name}
-          </button>
-        )
-      })}
+    <div style={{ marginBottom: 34 }}>
+      <div style={{
+        font: 'var(--type-overline)',
+        letterSpacing: 'var(--type-overline-tracking)',
+        textTransform: 'uppercase',
+        color: 'var(--fg-2)',
+        marginBottom: 4,
+      }}>Showing access for</div>
+      <div style={{
+        display: 'flex', gap: 2,
+        borderBottom: '1px solid var(--divider)',
+        overflowX: 'auto',
+      }}>
+        {sites.map((sd) => {
+          const isActive = sd.site.id === activeId
+          return (
+            <button
+              key={sd.site.id}
+              role="tab"
+              aria-selected={isActive}
+              onClick={() => onChange(sd.site.id)}
+              style={{
+                appearance: 'none', border: 0, background: 'none',
+                padding: '11px 16px',
+                font: '600 0.9375rem/1 var(--font-inter)',
+                color: isActive ? 'var(--primary)' : 'var(--fg-2)',
+                cursor: 'pointer',
+                borderBottom: `2px solid ${isActive ? 'var(--primary)' : 'transparent'}`,
+                marginBottom: -1,
+                whiteSpace: 'nowrap',
+                transition: `color var(--duration-shortest) var(--easing-standard)`,
+              }}
+              onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--fg-1)' }}
+              onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.color = 'var(--fg-2)' }}
+            >
+              {sd.site.name}
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }
 
-// ─── Permissions Page ────────────────────────────────────────────────────────
+// ─── App ─────────────────────────────────────────────────────────────────────
 
 export default function App() {
   const primaryId = SITES_DATA.find((s) => s.site.isPrimary)?.site.id ?? SITES_DATA[0].site.id
   const [activeSiteId, setActiveSiteId] = useState(primaryId)
-
   const activeSiteData = SITES_DATA.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
 
   function handleAskAdmin() {
@@ -197,48 +242,37 @@ export default function App() {
   return (
     <div className="min-h-screen" style={{ background: '#FAFAFB' }}>
       <Sidebar />
-
       <MobileHeader onAskAdmin={handleAskAdmin} />
 
       <main className="md:ml-16 min-h-screen">
         <div className="px-4 py-4 sm:px-8 sm:py-8">
           <TopBar onAskAdmin={handleAskAdmin} />
 
-          {/* Page header + site selector */}
-          <div style={{ maxWidth: 820, margin: '0 auto', paddingTop: 16, paddingBottom: 20 }}>
-            <h1 style={{
-              margin: '0 0 16px',
-              font: '700 2.125rem/1.235 var(--font-inter)',
-              letterSpacing: '0.25px',
-              color: 'var(--fg-1)',
-            }}>
-              Your permissions
-            </h1>
-            <div className="overflow-x-auto" style={{ marginBottom: 8 }}>
-              <SiteSelector
-                sites={SITES_DATA}
-                activeId={activeSiteId}
-                onChange={setActiveSiteId}
-              />
+          <div style={{ maxWidth: 980, margin: '0 auto' }}>
+            {/* Page header */}
+            <div style={{ marginBottom: 22 }}>
+              <h1 style={{
+                margin: '0 0 6px',
+                font: 'var(--type-h4)', letterSpacing: 'var(--type-h4-tracking)',
+                color: 'var(--fg-1)',
+              }}>My permissions</h1>
+              <p style={{ margin: 0, font: 'var(--type-body1)', color: 'var(--fg-2)', maxWidth: '56ch' }}>
+                Everything you're allowed to do is shown below — no need to search. Green cards are actions you can take; greyed-out cards aren't available to you.
+              </p>
             </div>
-            <p style={{
-              margin: 0,
-              font: '400 0.75rem/1.66rem var(--font-inter)',
-              letterSpacing: '0.4px',
-              color: '#4a5466',
-            }}>
-              Your permissions can differ at each site.
-            </p>
+
+            {/* Identity bar */}
+            <IdentityBar yourTitle={activeSiteData.yourTitle} />
+
+            {/* Site tabs */}
+            <SiteTabs sites={SITES_DATA} activeId={activeSiteId} onChange={setActiveSiteId} />
+
+            {/* Permission sections */}
+            <MyPermissionsPage siteData={activeSiteData} />
+
+            {/* Quick Check */}
+            <QuickCheck activeSiteData={activeSiteData} />
           </div>
-
-          {/* Permission cards */}
-          <MyPermissionsPage siteData={activeSiteData} />
-
-          {/* Quick Check */}
-          <div style={{ maxWidth: 820, margin: '0 auto' }}>
-            <QuickCheck activeSiteId={activeSiteId} sitesData={SITES_DATA} />
-          </div>
-
         </div>
       </main>
     </div>

@@ -1,329 +1,159 @@
 import { useState } from 'react'
-import type { SiteData, TreeRelation } from '../types'
+import type { SiteData } from '../types'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-interface ScopeGroup {
-  label: string
-  items: string[]
-  preview: number
-}
-
-interface PermCol {
-  allowed: boolean
-  groups: ScopeGroup[]
-}
-
-interface CardData {
+interface ActionInfo {
+  key: 'onboard' | 'offboard' | 'edit'
   icon: string
   title: string
   desc: string
-  perform: PermCol
-  approve: PermCol
 }
 
-// ─── Data derivation ──────────────────────────────────────────────────────────
+const ACTIONS: ActionInfo[] = [
+  { key: 'onboard',  icon: 'person_add',      title: 'Onboard a user',  desc: 'Create new employees' },
+  { key: 'offboard', icon: 'person_remove',    title: 'Offboard a user', desc: 'Terminate employees' },
+  { key: 'edit',     icon: 'manage_accounts',  title: 'Edit a user',     desc: 'Update profiles & roles' },
+]
 
-function performSites(tree: SiteData['tree']): string[] {
-  return tree
-    .filter((n) => n.relation === 'self' || n.relation === 'child-in-reach')
-    .map((n) => n.name)
-}
+// ─── JobChips ─────────────────────────────────────────────────────────────────
 
-function approveSites(tree: SiteData['tree']): string[] {
-  const allow: TreeRelation[] = ['self', 'child-in-reach', 'child-approve-only']
-  return tree.filter((n) => allow.includes(n.relation)).map((n) => n.name)
-}
-
-export function buildCardData(siteData: SiteData): CardData[] {
-  const { permissions, tree } = siteData
-  const pSites = performSites(tree)
-  const aSites = approveSites(tree)
-
-  return [
-    {
-      icon: 'person_add',
-      title: 'Onboard a user',
-      desc: 'Bring someone new onto your team',
-      perform: {
-        allowed: permissions.onboard.canPerform,
-        groups: permissions.onboard.canPerform ? [
-          { label: 'Job titles', items: permissions.onboard.performScopes, preview: 4 },
-          { label: 'Sites', items: pSites, preview: 3 },
-        ] : [],
-      },
-      approve: {
-        allowed: permissions.onboard.canApprove,
-        groups: permissions.onboard.canApprove ? [
-          { label: 'Job titles', items: permissions.onboard.approveScopes, preview: 4 },
-          { label: 'Sites', items: aSites, preview: 3 },
-        ] : [],
-      },
-    },
-    {
-      icon: 'person_remove',
-      title: 'Offboard a user',
-      desc: "End a person's employment",
-      perform: {
-        allowed: permissions.offboard.canPerform,
-        groups: permissions.offboard.canPerform ? [
-          { label: 'Job titles', items: permissions.offboard.performScopes, preview: 4 },
-          { label: 'Sites', items: pSites, preview: 3 },
-        ] : [],
-      },
-      approve: {
-        allowed: permissions.offboard.canApprove,
-        groups: permissions.offboard.canApprove ? [
-          { label: 'Job titles', items: permissions.offboard.approveScopes, preview: 4 },
-          { label: 'Sites', items: aSites, preview: 3 },
-        ] : [],
-      },
-    },
-    {
-      icon: 'person_edit',
-      title: 'Edit a user',
-      desc: "Change a person's record",
-      perform: {
-        allowed: permissions.edit.canPerform,
-        groups: permissions.edit.canPerform ? [
-          { label: 'Job titles', items: permissions.edit.performScopes, preview: 4 },
-          { label: 'Sites', items: pSites, preview: 3 },
-        ] : [],
-      },
-      approve: {
-        allowed: permissions.edit.canApprove,
-        groups: permissions.edit.canApprove ? [
-          { label: 'Job titles', items: permissions.edit.approveScopes, preview: 4 },
-          { label: 'Sites', items: aSites, preview: 3 },
-        ] : [],
-      },
-    },
-  ]
-}
-
-// ─── ScopeGroup ───────────────────────────────────────────────────────────────
-
-function ScopeGroupRow({ group }: { group: ScopeGroup }) {
+function JobChips({ jobs }: { jobs: string[] }) {
   const [showAll, setShowAll] = useState(false)
-  const hidden = group.items.length - group.preview
-  const visible = showAll ? group.items : group.items.slice(0, group.preview)
 
-  return (
-    <div style={{ marginBottom: 12 }}>
-      <div style={{
-        font: 'var(--type-caption)',
-        letterSpacing: 'var(--type-caption-tracking)',
-        color: 'var(--fg-2)',
-        marginBottom: 7,
-      }}>
-        {group.label}
-      </div>
+  if (jobs.length === 0) return null
+
+  const chipBase: React.CSSProperties = {
+    display: 'inline-flex', alignItems: 'center',
+    padding: '3px 10px', borderRadius: 'var(--radius-pill)',
+    font: '500 0.8125rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
+  }
+
+  if (jobs.length === 1 && jobs[0] === 'All job titles') {
+    return (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        {visible.map((item) => (
-          <span key={item} style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            padding: '3px 10px',
-            borderRadius: 'var(--radius-pill)',
-            border: '1px solid var(--secondary-outlined-border)',
-            background: 'var(--bg-default)',
-            color: 'var(--secondary)',
-            font: '500 0.8125rem/1.125rem var(--font-inter)',
-            whiteSpace: 'nowrap',
-          }}>
-            {item}
-          </span>
-        ))}
-        {hidden > 0 && !showAll && (
-          <button
-            onClick={() => setShowAll(true)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 2,
-              padding: '3px 10px',
-              borderRadius: 'var(--radius-pill)',
-              border: '1px solid var(--brand-300)',
-              background: 'var(--brand-50)',
-              color: 'var(--brand-600)',
-              font: '500 0.8125rem/1.125rem var(--font-inter)',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-            }}
-          >
-            +{hidden} more
-          </button>
-        )}
-        {hidden > 0 && showAll && (
-          <button
-            onClick={() => setShowAll(false)}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 2,
-              padding: '3px 10px',
-              borderRadius: 'var(--radius-pill)',
-              border: '1px solid var(--brand-300)',
-              background: 'var(--brand-50)',
-              color: 'var(--brand-600)',
-              font: '500 0.8125rem/1.125rem var(--font-inter)',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-            }}
-          >
-            Show less <span className="ico" style={{ fontSize: 15, marginLeft: 2 }}>expand_less</span>
-          </button>
-        )}
+        <span style={{ ...chipBase, border: '1px solid #CFE9D7', background: '#E7F4EA', color: '#1B7A43' }}>
+          All job titles
+        </span>
       </div>
-    </div>
-  )
-}
+    )
+  }
 
-// ─── PermColumn ───────────────────────────────────────────────────────────────
-
-function PermColumn({ label, perm }: { label: string; perm: PermCol }) {
-  const [open, setOpen] = useState(false)
+  const preview = 4
+  const hidden = jobs.length - preview
+  const visible = showAll ? jobs : jobs.slice(0, preview)
 
   return (
-    <div style={{ padding: '16px 24px 24px' }}>
-      {/* Label + chip row (chip left, See where right) */}
-      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
-        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{
-            font: '500 0.875rem/1.5rem var(--font-inter)',
-            color: '#616a7e',
-          }}>
-            {label}
-          </div>
-
-          {perm.allowed ? (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '3px 12px',
-              borderRadius: 'var(--radius-pill)',
-              font: '600 0.8125rem/1.125rem var(--font-inter)',
-              whiteSpace: 'nowrap',
-              background: '#edfcf2',
-              color: '#095c37',
-            }}>
-              <span className="ico" style={{ fontSize: 16, color: '#2E9E5B' }}>check</span>
-              You can do this
-            </div>
-          ) : (
-            <div style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '3px 12px',
-              borderRadius: 'var(--radius-pill)',
-              font: '600 0.8125rem/1.125rem var(--font-inter)',
-              whiteSpace: 'nowrap',
-              background: '#fcf4f2',
-              color: '#a63224',
-            }}>
-              <span className="ico" style={{ fontSize: 16, color: '#a63224' }}>close</span>
-              No permission
-            </div>
-          )}
-        </div>
-
-        {perm.allowed && (
-          <button
-            onClick={() => setOpen((o) => !o)}
-            aria-expanded={open}
-            style={{
-              flexShrink: 0,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4,
-              padding: '6px 8px',
-              border: 0,
-              background: 'transparent',
-              color: 'var(--brand-500)',
-              font: '500 0.875rem/1.5rem var(--font-inter)',
-              whiteSpace: 'nowrap',
-              cursor: 'pointer',
-              borderRadius: 'var(--radius-base)',
-            }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--brand-600)' }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--brand-500)' }}
-          >
-            {open ? 'Hide' : 'See where'}
-            <span className="ico" style={{
-              fontSize: 16,
-              transform: open ? 'rotate(180deg)' : 'rotate(0deg)',
-              transition: `transform var(--duration-shorter) var(--easing-standard)`,
-            }}>
-              expand_more
-            </span>
-          </button>
-        )}
-      </div>
-
-      {perm.allowed && (
-        <div style={{
-          display: 'grid',
-          gridTemplateRows: open ? '1fr' : '0fr',
-          transition: `grid-template-rows var(--duration-standard) var(--easing-standard)`,
-        }}>
-          <div style={{ overflow: 'hidden' }}>
-            <div style={{ paddingTop: 12 }}>
-              {perm.groups.map((g) => <ScopeGroupRow key={g.label} group={g} />)}
-            </div>
-          </div>
-        </div>
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+      {visible.map((j) => (
+        <span key={j} style={{ ...chipBase, border: '1px solid var(--secondary-outlined-border)', background: 'var(--bg-default)', color: 'var(--secondary)' }}>
+          {j}
+        </span>
+      ))}
+      {hidden > 0 && !showAll && (
+        <button onClick={() => setShowAll(true)} style={{ ...chipBase, border: '1px solid var(--brand-300)', background: 'var(--brand-50)', color: 'var(--brand-600)', cursor: 'pointer' }}>
+          +{hidden} more
+        </button>
+      )}
+      {hidden > 0 && showAll && (
+        <button onClick={() => setShowAll(false)} style={{ ...chipBase, border: '1px solid var(--brand-300)', background: 'var(--brand-50)', color: 'var(--brand-600)', cursor: 'pointer', gap: 2 }}>
+          Show less <span className="ico" style={{ fontSize: 15, marginLeft: 2 }}>expand_less</span>
+        </button>
       )}
     </div>
   )
 }
 
-// ─── PermCard ─────────────────────────────────────────────────────────────────
+// ─── ActionCard ───────────────────────────────────────────────────────────────
 
-function PermCard({ item }: { item: CardData }) {
+interface ActionCardProps {
+  action: ActionInfo
+  allowed: boolean
+  jobs: string[]
+}
+
+function ActionCard({ action, allowed, jobs }: ActionCardProps) {
   return (
     <div style={{
-      background: 'var(--bg-default)',
-      border: '1px solid var(--divider)',
-      borderRadius: 12,
-      boxShadow: '0px 1px 1px rgba(16,24,40,0.05)',
-      overflow: 'hidden',
+      borderRadius: 'var(--radius-base)',
+      border: `1px solid ${allowed ? '#CFE9D7' : 'var(--divider)'}`,
+      padding: 18,
+      display: 'flex', flexDirection: 'column',
+      background: allowed ? 'var(--bg-default)' : 'var(--bg-paper-elev-1)',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px', borderBottom: '1px solid var(--divider)' }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{
-          flexShrink: 0,
-          width: 36,
-          height: 36,
-          borderRadius: 8,
-          background: 'var(--bg-paper-elev-1)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          color: 'var(--icon-strong)',
+          flexShrink: 0, width: 40, height: 40, borderRadius: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: allowed ? '#E7F4EA' : 'var(--bg-default)',
+          color: allowed ? '#1B7A43' : 'var(--icon-subtle)',
+          border: allowed ? 'none' : '1px solid var(--divider)',
         }}>
-          <span className="ico" style={{ fontSize: 20 }}>{item.icon}</span>
+          <span className="ico" style={{ fontSize: 22 }}>{action.icon}</span>
         </div>
         <div>
-          <h2 style={{
-            margin: 0,
-            font: '600 1rem/1.75rem var(--font-inter)',
-            letterSpacing: '0.15px',
-            color: 'var(--fg-1)',
-          }}>
-            {item.title}
-          </h2>
-          <p style={{ margin: 0, font: 'var(--type-body2)', color: '#616a7e' }}>
-            {item.desc}
-          </p>
+          <h3 style={{
+            margin: 0, font: 'var(--type-subtitle1)', letterSpacing: 'var(--type-subtitle1-tracking)',
+            color: allowed ? 'var(--fg-1)' : 'var(--fg-2)',
+          }}>{action.title}</h3>
+          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: 'var(--fg-2)' }}>{action.desc}</p>
         </div>
       </div>
 
-      <div className="perm-card-cols">
-        <PermColumn label="Perform" perm={item.perform} />
-        <div className="perm-card-col-right">
-          <PermColumn label="Approve" perm={item.approve} />
-        </div>
+      <div style={{
+        display: 'inline-flex', alignItems: 'center', gap: 6,
+        font: '600 0.8125rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
+        color: allowed ? '#1B7A43' : 'var(--fg-disabled)',
+      }}>
+        <span className="ico" style={{ fontSize: 17 }}>{allowed ? 'check_circle' : 'lock'}</span>
+        {allowed ? 'You can do this' : 'Not available to you'}
+      </div>
+
+      {allowed && (
+        <>
+          <div style={{ height: 1, background: 'var(--divider)', margin: '14px 0' }} />
+          <div style={{ font: 'var(--type-caption)', letterSpacing: 'var(--type-caption-tracking)', color: 'var(--fg-2)', marginBottom: 8 }}>
+            For these job titles
+          </div>
+          <JobChips jobs={jobs} />
+        </>
+      )}
+    </div>
+  )
+}
+
+// ─── Section ──────────────────────────────────────────────────────────────────
+
+interface SectionProps {
+  icon: string
+  title: string
+  subtitle: string
+  mode: 'perform' | 'approve'
+  siteData: SiteData
+}
+
+function Section({ icon, title, subtitle, mode, siteData }: SectionProps) {
+  return (
+    <div style={{ marginBottom: 38 }}>
+      <div style={{ marginBottom: 16 }}>
+        <h2 style={{
+          margin: '0 0 3px',
+          font: 'var(--type-h6)', letterSpacing: 'var(--type-h6-tracking)',
+          color: 'var(--fg-1)',
+          display: 'flex', alignItems: 'center', gap: 9,
+        }}>
+          <span className="ico" style={{ fontSize: 22, color: 'var(--icon-base)' }}>{icon}</span>
+          {title}
+        </h2>
+        <p style={{ margin: 0, font: 'var(--type-body2)', color: 'var(--fg-2)' }}>{subtitle}</p>
+      </div>
+      <div className="acard-grid">
+        {ACTIONS.map((action) => {
+          const perm = siteData.permissions[action.key]
+          const allowed = mode === 'perform' ? perm.canPerform : perm.canApprove
+          const jobs = mode === 'perform' ? perm.performScopes : perm.approveScopes
+          return <ActionCard key={action.key} action={action} allowed={allowed} jobs={jobs} />
+        })}
       </div>
     </div>
   )
@@ -336,13 +166,22 @@ interface Props {
 }
 
 export function MyPermissionsPage({ siteData }: Props) {
-  const cards = buildCardData(siteData)
-
   return (
-    <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 24 }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {cards.map((item) => <PermCard key={item.title} item={item} />)}
-      </div>
-    </div>
+    <>
+      <Section
+        icon="bolt"
+        title="What you can do yourself"
+        subtitle="Actions you can perform directly, right now."
+        mode="perform"
+        siteData={siteData}
+      />
+      <Section
+        icon="how_to_reg"
+        title="What you can approve for others"
+        subtitle="Requests you can authorize when a teammate submits them."
+        mode="approve"
+        siteData={siteData}
+      />
+    </>
   )
 }

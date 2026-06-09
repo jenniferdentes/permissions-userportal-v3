@@ -12,11 +12,14 @@
   --brand-600: #3A3E75;
   --fg-1: #202938;
   --fg-2: #4A5466;
+  --fg-disabled: #9AA2B2;
   --icon-base: #667085;
   --icon-strong: #1D2939;
+  --icon-subtle: #98A2B3;
   --bg-default: #FFFFFF;
   --bg-paper-elev-1: #F7F8FC;
   --divider: #EAECF0;
+  --primary: var(--brand-600);
   --secondary: #323767;
   --secondary-outlined-border: #D0D3E8;
   --primary-hover-bg: rgba(50, 55, 103, 0.04);
@@ -29,12 +32,22 @@
   --duration-shortest: 150ms;
   --duration-shorter: 200ms;
   --duration-standard: 300ms;
+  --type-h4: 700 2.125rem/2.62438rem var(--font-inter);
+  --type-h4-tracking: 0.01563rem;
+  --type-h6: 600 1.25rem/2rem var(--font-inter);
+  --type-h6-tracking: 0.00938rem;
   --type-subtitle1: 600 1rem/1.75rem var(--font-inter);
+  --type-subtitle1-tracking: 0.00938rem;
+  --type-subtitle2: 600 0.875rem/1.37375rem var(--font-inter);
+  --type-subtitle2-tracking: 0.00625rem;
+  --type-body1: 400 1rem/1.5rem var(--font-inter);
   --type-body2: 400 0.875rem/1.25125rem var(--font-inter);
   --type-overline: 400 0.75rem/1.995rem var(--font-inter);
   --type-overline-tracking: 0.0625rem;
   --type-caption: 400 0.75rem/1.245rem var(--font-inter);
   --type-caption-tracking: 0.025rem;
+  --avatar-periwinkle-bg: #E0E1FA;
+  --avatar-periwinkle-fg: #6267E6;
 }
 
 .ico {
@@ -45,23 +58,17 @@
   display: inline-block;
 }
 
-/* ─── Permission card columns ──────────────────────────────────────────────── */
-.perm-card-cols {
+/* ─── Action card grid ──────────────────────────────────────────────────────── */
+.acard-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  border-top: 1px solid var(--divider);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
 }
-.perm-card-col-right {
-  border-left: 1px solid var(--divider);
+@media (max-width: 860px) {
+  .acard-grid { grid-template-columns: repeat(2, 1fr); }
 }
-@media (max-width: 600px) {
-  .perm-card-cols {
-    grid-template-columns: 1fr;
-  }
-  .perm-card-col-right {
-    border-left: none;
-    border-top: 1px solid var(--divider);
-  }
+@media (max-width: 560px) {
+  .acard-grid { grid-template-columns: 1fr; }
 }
 
 @layer base {
