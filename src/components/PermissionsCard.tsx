@@ -185,65 +185,67 @@ function PermColumn({ label, perm }: { label: string; perm: PermCol }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <div style={{ padding: '12px 20px 16px' }}>
-      <div style={{
-        font: 'var(--type-overline)',
-        letterSpacing: 'var(--type-overline-tracking)',
-        textTransform: 'uppercase',
-        color: 'var(--fg-2)',
-        marginBottom: 8,
-      }}>
-        {label}
-      </div>
+    <div style={{ padding: '16px 24px 24px' }}>
+      {/* Label + chip row (chip left, See where right) */}
+      <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div style={{
+            font: '500 0.875rem/1.5rem var(--font-inter)',
+            color: '#616a7e',
+          }}>
+            {label}
+          </div>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: perm.allowed ? 0 : 0 }}>
-        {perm.allowed ? (
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 5,
-            padding: '3px 9px 3px 6px',
-            borderRadius: 'var(--radius-pill)',
-            font: '600 0.8125rem/1.125rem var(--font-inter)',
-            whiteSpace: 'nowrap',
-            background: '#E7F4EA',
-            color: '#1B7A43',
-          }}>
-            <span className="ico" style={{ fontSize: 15, color: '#2E9E5B' }}>check</span>
-            You can do this
-          </div>
-        ) : (
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 5,
-            padding: '3px 9px 3px 6px',
-            borderRadius: 'var(--radius-pill)',
-            font: '600 0.8125rem/1.125rem var(--font-inter)',
-            whiteSpace: 'nowrap',
-            background: '#FEE2E2',
-            color: '#B91C1C',
-          }}>
-            <span className="ico" style={{ fontSize: 15, color: '#EF4444' }}>close</span>
-            No permission
-          </div>
-        )}
+          {perm.allowed ? (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '3px 12px',
+              borderRadius: 'var(--radius-pill)',
+              font: '600 0.8125rem/1.125rem var(--font-inter)',
+              whiteSpace: 'nowrap',
+              background: '#edfcf2',
+              color: '#095c37',
+            }}>
+              <span className="ico" style={{ fontSize: 16, color: '#2E9E5B' }}>check</span>
+              You can do this
+            </div>
+          ) : (
+            <div style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4,
+              padding: '3px 12px',
+              borderRadius: 'var(--radius-pill)',
+              font: '600 0.8125rem/1.125rem var(--font-inter)',
+              whiteSpace: 'nowrap',
+              background: '#fcf4f2',
+              color: '#a63224',
+            }}>
+              <span className="ico" style={{ fontSize: 16, color: '#a63224' }}>close</span>
+              No permission
+            </div>
+          )}
+        </div>
 
         {perm.allowed && (
           <button
             onClick={() => setOpen((o) => !o)}
             aria-expanded={open}
             style={{
+              flexShrink: 0,
               display: 'inline-flex',
               alignItems: 'center',
-              gap: 2,
-              padding: 0,
+              gap: 4,
+              padding: '6px 8px',
               border: 0,
               background: 'transparent',
               color: 'var(--brand-500)',
-              font: '600 0.8125rem/1 var(--font-inter)',
+              font: '500 0.875rem/1.5rem var(--font-inter)',
               whiteSpace: 'nowrap',
               cursor: 'pointer',
+              borderRadius: 'var(--radius-base)',
             }}
             onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--brand-600)' }}
             onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--brand-500)' }}
@@ -284,17 +286,17 @@ function PermCard({ item }: { item: CardData }) {
     <div style={{
       background: 'var(--bg-default)',
       border: '1px solid var(--divider)',
-      borderRadius: 'var(--radius-base)',
+      borderRadius: 12,
+      boxShadow: '0px 1px 1px rgba(16,24,40,0.05)',
       overflow: 'hidden',
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px', borderBottom: '1px solid var(--divider)' }}>
         <div style={{
           flexShrink: 0,
-          width: 34,
-          height: 34,
+          width: 36,
+          height: 36,
           borderRadius: 8,
           background: 'var(--bg-paper-elev-1)',
-          border: '1px solid var(--divider)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -305,25 +307,21 @@ function PermCard({ item }: { item: CardData }) {
         <div>
           <h2 style={{
             margin: 0,
-            font: 'var(--type-subtitle1)',
-            letterSpacing: '0.00938rem',
+            font: '600 1rem/1.75rem var(--font-inter)',
+            letterSpacing: '0.15px',
             color: 'var(--fg-1)',
           }}>
             {item.title}
           </h2>
-          <p style={{ margin: '1px 0 0', font: 'var(--type-body2)', color: 'var(--fg-2)' }}>
+          <p style={{ margin: 0, font: 'var(--type-body2)', color: '#616a7e' }}>
             {item.desc}
           </p>
         </div>
       </div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        borderTop: '1px solid var(--divider)',
-      }}>
+      <div className="perm-card-cols">
         <PermColumn label="Perform" perm={item.perform} />
-        <div style={{ borderLeft: '1px solid var(--divider)' }}>
+        <div className="perm-card-col-right">
           <PermColumn label="Approve" perm={item.approve} />
         </div>
       </div>
@@ -341,50 +339,7 @@ export function MyPermissionsPage({ siteData }: Props) {
   const cards = buildCardData(siteData)
 
   return (
-    <div style={{ maxWidth: 820, margin: '0 auto', padding: '40px 0 24px' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        gap: 16,
-        marginBottom: 20,
-      }}>
-        <div>
-          <h1 style={{
-            margin: '0 0 4px',
-            font: '700 2.125rem/2.62438rem var(--font-inter)',
-            letterSpacing: '0.01563rem',
-            color: 'var(--fg-1)',
-          }}>
-            My permissions
-          </h1>
-          <p style={{ margin: 0, font: 'var(--type-body2)', color: 'var(--fg-2)' }}>
-            Here's what you're allowed to do in this portal.
-          </p>
-        </div>
-        <button
-          aria-label="More options"
-          style={{
-            flexShrink: 0,
-            width: 36,
-            height: 36,
-            borderRadius: '50%',
-            border: 0,
-            background: 'transparent',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'var(--icon-base)',
-            cursor: 'pointer',
-            transition: `background var(--duration-shortest) var(--easing-standard)`,
-          }}
-          onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--primary-hover-bg)' }}
-          onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent' }}
-        >
-          <span className="ico" style={{ fontSize: 24 }}>more_horiz</span>
-        </button>
-      </div>
-
+    <div style={{ maxWidth: 820, margin: '0 auto', paddingBottom: 24 }}>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
         {cards.map((item) => <PermCard key={item.title} item={item} />)}
       </div>

@@ -387,16 +387,13 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
         <p className="text-sm text-gray-500 mt-0.5 ml-6">Try a specific scenario before you act.</p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Desktop: inline row */}
+      <div className="hidden sm:flex flex-wrap items-center gap-2">
         <span className="text-sm text-gray-700 font-medium">Can I</span>
-
         <ActionSelect value={action} onChange={handleActionChange} />
-
-        {/* Only show "a" article when searching by job title */}
         {(!showPersonPicker || !selectedUser) && (
           <span className="text-sm text-gray-700">a</span>
         )}
-
         <PersonOrTitleSelect
           jobTitle={jobTitle}
           selectedUser={selectedUser}
@@ -404,9 +401,7 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
           onSelectTitle={handleSelectTitle}
           onSelectUser={handleSelectUser}
         />
-
         <SiteSelect value={siteId} onChange={handleSiteChange} sitesData={sitesData} />
-
         <button
           type="button"
           onClick={handleCheck}
@@ -415,6 +410,36 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
         >
           Check
         </button>
+      </div>
+
+      {/* Mobile: stacked column */}
+      <div className="sm:hidden flex flex-col gap-2">
+        <span className="text-base font-semibold text-gray-900">Can I</span>
+        <div className="[&>div>button]:w-full">
+          <ActionSelect value={action} onChange={handleActionChange} />
+        </div>
+        <div className="[&>div>button]:w-full">
+          <PersonOrTitleSelect
+            jobTitle={jobTitle}
+            selectedUser={selectedUser}
+            showPersonPicker={showPersonPicker}
+            onSelectTitle={handleSelectTitle}
+            onSelectUser={handleSelectUser}
+          />
+        </div>
+        <div className="[&>div>button]:w-full">
+          <SiteSelect value={siteId} onChange={handleSiteChange} sitesData={sitesData} />
+        </div>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={handleCheck}
+            disabled={!hasSelection}
+            className="px-4 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 active:bg-slate-900 disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1 transition-colors"
+          >
+            Check
+          </button>
+        </div>
       </div>
 
       {checked && result !== null && (

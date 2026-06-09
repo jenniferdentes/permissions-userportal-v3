@@ -44,7 +44,7 @@ function NavItem({ icon, label, active, muted }: NavItemProps) {
 
 function Sidebar() {
   return (
-    <aside className="fixed inset-y-0 left-0 w-16 bg-white border-r border-gray-200 flex flex-col items-center py-4 z-30">
+    <aside className="hidden md:flex fixed inset-y-0 left-0 w-16 bg-white border-r border-gray-200 flex-col items-center py-4 z-30">
       {/* Logo */}
       <div className="mb-3">
         <CubXLogo className="w-8 h-8" />
@@ -83,9 +83,32 @@ function Sidebar() {
 
 // ─── Top Bar ────────────────────────────────────────────────────────────────
 
+function MobileHeader({ onAskAdmin }: { onAskAdmin: () => void }) {
+  return (
+    <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200 sticky top-0 z-30">
+      <CubXLogo className="w-7 h-7" />
+      <div className="flex items-center gap-2">
+        <button
+          onClick={onAskAdmin}
+          className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors"
+        >
+          <IconTicket className="w-4 h-4" />
+          Ticket
+        </button>
+        <div
+          className="w-8 h-8 rounded-full bg-orange-400 flex items-center justify-center text-white text-sm font-semibold select-none"
+          title="Grace Hopper"
+        >
+          GH
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function TopBar({ onAskAdmin }: { onAskAdmin: () => void }) {
   return (
-    <div className="flex items-center justify-end gap-3 pb-6">
+    <div className="hidden md:flex items-center justify-end gap-3 pb-6">
       <button
         onClick={onAskAdmin}
         className="flex items-center gap-2 px-3.5 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50 transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-1"
@@ -113,95 +136,45 @@ function TopBar({ onAskAdmin }: { onAskAdmin: () => void }) {
   )
 }
 
-// ─── Site Tabs ───────────────────────────────────────────────────────────────
+// ─── Site Selector (ButtonGroup) ─────────────────────────────────────────────
 
-interface SiteTabsProps {
+interface SiteSelectorProps {
   sites: SiteData[]
   activeId: string
   onChange: (id: string) => void
 }
 
-function SiteTabs({ sites, activeId, onChange }: SiteTabsProps) {
+function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: 4,
-        borderBottom: '0.5px solid #e0e0e0',
-        marginBottom: 0,
-      }}
-    >
-      {sites.map((sd) => {
+    <div style={{
+      display: 'inline-flex',
+      border: '1px solid rgba(50,55,103,0.3)',
+      borderRadius: 8,
+      overflow: 'hidden',
+    }}>
+      {sites.map((sd, i) => {
         const isActive = sd.site.id === activeId
-        const dotColor = isActive
-          ? sd.site.isPrimary
-            ? '#639922'
-            : '#378ADD'
-          : '#D1D5DB'
-
         return (
           <button
             key={sd.site.id}
             onClick={() => onChange(sd.site.id)}
             style={{
-              fontSize: 12,
-              padding: '7px 14px',
-              borderRadius: '8px 8px 0 0',
-              border: isActive ? '0.5px solid #e0e0e0' : '0.5px solid transparent',
-              borderBottom: isActive ? '0.5px solid #fff' : '0.5px solid transparent',
-              background: isActive ? '#fff' : 'none',
-              cursor: 'pointer',
-              color: isActive ? '#1a1a1a' : '#6B7280',
-              fontWeight: isActive ? 500 : 400,
-              marginBottom: '-0.5px',
               display: 'flex',
               alignItems: 'center',
-              gap: 6,
-              transition: 'background 0.15s, color 0.15s',
-              outline: 'none',
+              padding: '6px 16px',
+              background: isActive ? '#e8e9f2' : '#fff',
+              color: isActive ? '#323767' : '#3a3e75',
+              font: '500 0.875rem/1.5rem var(--font-inter)',
+              border: 'none',
+              borderLeft: i > 0 ? '1px solid rgba(50,55,103,0.3)' : 'none',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'background var(--duration-shortest) var(--easing-standard)',
             }}
-            onMouseEnter={(e) => {
-              if (!isActive) {
-                const btn = e.currentTarget as HTMLButtonElement
-                btn.style.background = '#fff'
-                btn.style.color = '#1a1a1a'
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isActive) {
-                const btn = e.currentTarget as HTMLButtonElement
-                btn.style.background = 'none'
-                btn.style.color = '#6B7280'
-              }
-            }}
+            onMouseEnter={(e) => { if (!isActive) e.currentTarget.style.background = '#f3f3f8' }}
+            onMouseLeave={(e) => { if (!isActive) e.currentTarget.style.background = '#fff' }}
           >
-            {/* Dot */}
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: '50%',
-                background: dotColor,
-                flexShrink: 0,
-              }}
-            />
             {sd.site.name}
-            {/* Primary badge */}
-            {sd.site.isPrimary && (
-              <span
-                style={{
-                  fontSize: 9,
-                  fontWeight: 500,
-                  padding: '1px 5px',
-                  borderRadius: 3,
-                  background: '#E6F1FB',
-                  color: '#185FA5',
-                  border: '0.5px solid #B5D4F4',
-                }}
-              >
-                Primary
-              </span>
-            )}
           </button>
         )
       })}
@@ -225,18 +198,40 @@ export default function App() {
     <div className="min-h-screen" style={{ background: '#FAFAFB' }}>
       <Sidebar />
 
-      <main className="ml-16 min-h-screen">
-        <div className="px-8 py-8">
+      <MobileHeader onAskAdmin={handleAskAdmin} />
+
+      <main className="md:ml-16 min-h-screen">
+        <div className="px-4 py-4 sm:px-8 sm:py-8">
           <TopBar onAskAdmin={handleAskAdmin} />
 
-          {/* Site tabs */}
-          <SiteTabs
-            sites={SITES_DATA}
-            activeId={activeSiteId}
-            onChange={setActiveSiteId}
-          />
+          {/* Page header + site selector */}
+          <div style={{ maxWidth: 820, margin: '0 auto', paddingTop: 16, paddingBottom: 20 }}>
+            <h1 style={{
+              margin: '0 0 16px',
+              font: '700 2.125rem/1.235 var(--font-inter)',
+              letterSpacing: '0.25px',
+              color: 'var(--fg-1)',
+            }}>
+              Your permissions
+            </h1>
+            <div className="overflow-x-auto" style={{ marginBottom: 8 }}>
+              <SiteSelector
+                sites={SITES_DATA}
+                activeId={activeSiteId}
+                onChange={setActiveSiteId}
+              />
+            </div>
+            <p style={{
+              margin: 0,
+              font: '400 0.75rem/1.66rem var(--font-inter)',
+              letterSpacing: '0.4px',
+              color: '#4a5466',
+            }}>
+              Your permissions can differ at each site.
+            </p>
+          </div>
 
-          {/* Permissions page */}
+          {/* Permission cards */}
           <MyPermissionsPage siteData={activeSiteData} />
 
           {/* Quick Check */}

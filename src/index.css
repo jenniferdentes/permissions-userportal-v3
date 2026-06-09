@@ -45,6 +45,25 @@
   display: inline-block;
 }
 
+/* ─── Permission card columns ──────────────────────────────────────────────── */
+.perm-card-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--divider);
+}
+.perm-card-col-right {
+  border-left: 1px solid var(--divider);
+}
+@media (max-width: 600px) {
+  .perm-card-cols {
+    grid-template-columns: 1fr;
+  }
+  .perm-card-col-right {
+    border-left: none;
+    border-top: 1px solid var(--divider);
+  }
+}
+
 @layer base {
   * {
     box-sizing: border-box;
