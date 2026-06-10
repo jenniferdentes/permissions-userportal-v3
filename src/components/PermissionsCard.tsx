@@ -159,8 +159,8 @@ interface SectionProps {
 
 function Section({ icon, title, subtitle, mode, siteData }: SectionProps) {
   return (
-    <div style={{ marginBottom: 24 }}>
-      <div style={{ marginBottom: 16 }}>
+    <div style={{ marginBottom: 48 }}>
+      <div style={{ marginBottom: 20 }}>
         <h2 style={{
           margin: '0 0 3px',
           font: 'var(--type-h6)', letterSpacing: 'var(--type-h6-tracking)',

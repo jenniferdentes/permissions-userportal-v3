@@ -372,7 +372,7 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
   const hasSelection = !!jobTitle
 
   return (
-    <div className="bg-[#E1D8F1]/30 dark:bg-[#9b58d6]/10 rounded-xl border border-dashed border-[#C4B2E5] dark:border-[#9b58d6]/30 px-6 py-5">
+    <div className="bg-[rgba(225,216,241,0.15)] dark:bg-[#9b58d6]/10 rounded-xl border border-dashed border-[#C4B2E5] dark:border-[#9b58d6]/30 px-6 py-6">
       <div className="mb-4">
         <div className="flex items-center gap-2">
           <IconSparkle className="w-4 h-4 text-[#9171C8]" />
@@ -383,7 +383,7 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
 
       {/* Desktop: inline row */}
       <div className="hidden sm:flex flex-wrap items-center gap-2">
-        <span className="text-sm text-[var(--fg-2)] font-medium">Can I</span>
+        <span className="text-base font-semibold text-[var(--fg-1)] tracking-[0.15px]">Can I</span>
         <ActionSelect value={action} onChange={handleActionChange} />
         {(!showPersonPicker || !selectedUser) && (
           <span className="text-sm text-[var(--fg-2)]">a</span>
@@ -441,25 +441,25 @@ export function QuickCheck({ activeSiteId, sitesData }: Props) {
           {result === 'allowed' && (
             <>
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--status-success-icon)' }} />
-              <span className="text-sm font-medium" style={{ color: 'var(--status-success-text)' }}>Yes, you can do this.</span>
+              <span className="text-base font-semibold leading-[1.75] tracking-[0.15px]" style={{ color: 'var(--status-success-text)' }}>Yes, you can do this.</span>
             </>
           )}
           {result === 'partial' && (
             <>
               <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--status-warning-icon)' }} />
-              <span className="text-sm" style={{ color: 'var(--status-warning-text)' }}>
+              <span className="text-base font-semibold leading-[1.75] tracking-[0.15px]" style={{ color: 'var(--status-warning-text)' }}>
                 You have the action but <strong>{jobTitle}</strong> isn't in your scope for this.{' '}
-                <a href={adminHref} className="font-medium underline opacity-80 hover:opacity-100">Talk to your admin</a>
+                <a href={adminHref} className="underline opacity-80 hover:opacity-100">Talk to your admin</a>
                 {' '}to expand your scope.
               </span>
             </>
           )}
           {result === 'blocked' && (
             <>
-              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--mui-palette-error-main)' }} />
-              <span className="text-sm" style={{ color: 'var(--mui-palette-error-main)' }}>
+              <span className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: 'var(--status-error-text)' }} />
+              <span className="text-base font-semibold leading-[1.75] tracking-[0.15px]" style={{ color: 'var(--status-error-text)' }}>
                 You don't have access for this.{' '}
-                <a href={adminHref} className="font-medium underline opacity-80 hover:opacity-100 transition-opacity">
+                <a href={adminHref} className="underline opacity-80 hover:opacity-100 transition-opacity">
                   Talk to your admin
                 </a>
                 {' '}if you need it.

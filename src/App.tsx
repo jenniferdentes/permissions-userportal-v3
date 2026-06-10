@@ -22,7 +22,6 @@ import {
 } from './icons'
 import { MyPermissionsPage } from './components/PermissionsCard'
 import { QuickCheck } from './components/QuickCheck'
-import { SiteTree } from './components/SiteTree'
 
 // ─── Theme toggle ─────────────────────────────────────────────────────────────
 
@@ -162,8 +161,6 @@ function TopBar({ onAskAdmin }: { onAskAdmin: () => void }) {
 }
 
 // ─── Site Selector ────────────────────────────────────────────────────────────
-
-const PILL_THRESHOLD = 8
 
 interface SiteSelectorProps {
   sites: SiteData[]
@@ -334,12 +331,40 @@ function SiteSelectorDropdown({ sites, activeId, onChange }: SiteSelectorProps) 
 
 function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
   const isMobile = useMediaQuery(useTheme().breakpoints.down('md'))
-  const useDropdown = isMobile || sites.length > PILL_THRESHOLD
+  const containerRef = useRef<HTMLDivElement>(null)
+  const ghostRef = useRef<HTMLDivElement>(null)
+  const [overflows, setOverflows] = useState(false)
+
+  useEffect(() => {
+    const container = containerRef.current
+    const ghost = ghostRef.current
+    if (!container || !ghost) return
+    const check = () => setOverflows(ghost.scrollWidth > container.clientWidth)
+    check()
+    const ro = new ResizeObserver(check)
+    ro.observe(container)
+    return () => ro.disconnect()
+  }, [sites])
+
+  const useDropdown = isMobile || overflows
 
   return (
-    <div style={{ marginBottom: 28 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-        <span style={{ font: '500 0.875rem/1 var(--font-inter)', color: 'var(--fg-2)' }}>Site:</span>
+    <div ref={containerRef} style={{ marginBottom: 28, position: 'relative' }}>
+      {/* Ghost pills — invisible, measures natural pill width vs container width */}
+      <div
+        ref={ghostRef}
+        aria-hidden="true"
+        style={{
+          position: 'absolute', top: 0, left: 0,
+          overflow: 'visible', visibility: 'hidden', pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+        }}
+      >
+        <SiteSelectorPills sites={sites} activeId={activeId} onChange={() => {}} />
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <span style={{ font: '500 0.875rem/1 var(--font-inter)', color: 'var(--fg-2)', flexShrink: 0 }}>Site:</span>
         {useDropdown
           ? <SiteSelectorDropdown sites={sites} activeId={activeId} onChange={onChange} />
           : <SiteSelectorPills sites={sites} activeId={activeId} onChange={onChange} />
@@ -373,7 +398,7 @@ export default function App() {
     )
   }
   const [manySites, setManySites] = useState(false)
-  const FEW_SITES = [...SITES_DATA, ...EXTRA_SITES.slice(0, 5)]
+  const FEW_SITES = [...SITES_DATA, ...EXTRA_SITES.slice(0, 2)]
   const allSites = manySites ? [...SITES_DATA, ...EXTRA_SITES] : FEW_SITES
   const activeSiteData = allSites.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
 
@@ -397,7 +422,7 @@ export default function App() {
 
           <div style={{ maxWidth: 1100, margin: '0 auto' }}>
             {/* Page header */}
-            <div style={{ marginBottom: 22 }}>
+            <div style={{ marginBottom: 32 }}>
               <h1 style={{
                 margin: '0 0 6px',
                 font: 'var(--type-h4)', letterSpacing: 'var(--type-h4-tracking)',
@@ -413,9 +438,6 @@ export default function App() {
 
             {/* Quick Check */}
             <QuickCheck activeSiteId={activeSiteId} sitesData={allSites} />
-
-            {/* Site tree */}
-            <SiteTree siteData={activeSiteData} />
           </div>
         </div>
       </main>
