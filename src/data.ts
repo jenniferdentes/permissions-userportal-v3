@@ -242,3 +242,32 @@ export const SITES_DATA: SiteData[] = [
     ],
   },
 ]
+
+// ─── Extra sites for the "many sites" demo state (>8 triggers dropdown) ───────
+
+const STUB_PERMISSIONS = {
+  onboard:  { canPerform: false, performScopes: [], canApprove: false, approveScopes: [] },
+  edit:     { canPerform: false, performScopes: [], canApprove: false, approveScopes: [] },
+  offboard: { canPerform: false, performScopes: [], canApprove: false, approveScopes: [] },
+}
+
+const EXTRA_SITE_NAMES = [
+  'Riverside Clinic',   'Blue Ridge Medical',  'Sunset Health',      'Oakwood Care',
+  'Lakeview Hospital',  'Pinecrest Center',    'Valley Medical',     'Harbor Health',
+  'Westport Clinic',    'Northgate Medical',   'Elmwood Care',       'Clearwater Health',
+  'Bayside Center',     'Greenfield Medical',  'Hillcrest Clinic',   'Maplewood Health',
+  'Cedarwood Care',     'Stonegate Medical',   'Fairview Center',    'Willowbrook Health',
+  'Brookside Clinic',   'Ridgeway Medical',    'Springdale Care',    'Lakewood Health',
+  'Fireside Center',    'Meadowbrook Medical', 'Crestwood Clinic',   'Timberline Health',
+  'Highview Center',    'Creekside Medical',   'Bridgewater Care',   'Parkside Health',
+  'Thornton Clinic',    'Shelby Medical',      'Greystone Center',   'Ashford Health',
+  'Belmont Clinic',     'Redwood Medical',
+]
+
+export const EXTRA_SITES: SiteData[] = EXTRA_SITE_NAMES.map((name, i) => ({
+  site: { id: `extra-${i}`, name, isPrimary: false },
+  yourTitle: 'Viewer',
+  ladderAbove: [],
+  permissions: { siteId: `extra-${i}`, ...STUB_PERMISSIONS },
+  tree: [{ id: `extra-${i}`, name, relation: 'self' }],
+}))

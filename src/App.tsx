@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
 import { useColorScheme } from '@mui/material/styles'
 import CompanySettings from './components/CompanySettings'
-import { SITES_DATA } from './data'
+import { SITES_DATA, EXTRA_SITES } from './data'
 import type { SiteData } from './types'
 import {
   CubXLogo,
@@ -162,10 +162,173 @@ function TopBar({ onAskAdmin }: { onAskAdmin: () => void }) {
 
 // ─── Site Selector ────────────────────────────────────────────────────────────
 
+const PILL_THRESHOLD = 8
+
 interface SiteSelectorProps {
   sites: SiteData[]
   activeId: string
   onChange: (id: string) => void
+}
+
+function SiteSelectorPills({ sites, activeId, onChange }: SiteSelectorProps) {
+  return (
+    <div style={{
+      display: 'inline-flex',
+      border: '1px solid var(--secondary-outlined-border)',
+      borderRadius: 'var(--radius-base)',
+      overflow: 'hidden',
+    }}>
+      {sites.map((sd, i) => {
+        const isActive = sd.site.id === activeId
+        return (
+          <button
+            key={sd.site.id}
+            onClick={() => onChange(sd.site.id)}
+            style={{
+              appearance: 'none', border: 0,
+              borderLeft: i > 0 ? '1px solid var(--secondary-outlined-border)' : 'none',
+              background: isActive ? 'var(--brand-600)' : 'var(--bg-default)',
+              padding: '8px 16px',
+              font: '500 0.875rem/1 var(--font-inter)',
+              color: isActive ? '#fff' : 'var(--fg-2)',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              transition: 'background var(--duration-shortest) var(--easing-standard)',
+            }}
+          >
+            {sd.site.name}
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
+function SiteSelectorDropdown({ sites, activeId, onChange }: SiteSelectorProps) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const active = sites.find((s) => s.site.id === activeId)
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+        setQuery('')
+      }
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  useEffect(() => {
+    if (open) setTimeout(() => inputRef.current?.focus(), 0)
+  }, [open])
+
+  const filtered = query
+    ? sites.filter((s) => s.site.name.toLowerCase().includes(query.toLowerCase()))
+    : sites
+
+  return (
+    <div ref={ref} style={{ position: 'relative', display: 'inline-block' }}>
+      <button
+        onClick={() => { setOpen((o) => !o); setQuery('') }}
+        style={{
+          display: 'flex', alignItems: 'center', gap: 8,
+          appearance: 'none',
+          border: `1px solid ${open ? 'var(--brand-600)' : 'var(--secondary-outlined-border)'}`,
+          borderRadius: 'var(--radius-base)',
+          background: 'var(--bg-default)',
+          padding: '8px 12px',
+          font: '500 0.875rem/1 var(--font-inter)',
+          color: 'var(--fg-1)',
+          cursor: 'pointer',
+          minWidth: 200,
+          transition: 'border-color var(--duration-shortest) var(--easing-standard)',
+        }}
+      >
+        <span style={{ flex: 1, textAlign: 'left', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {active?.site.name ?? 'Select site'}
+        </span>
+        <span className="ico" style={{ fontSize: 18, color: 'var(--icon-subtle)', flexShrink: 0, transition: 'transform 150ms', transform: open ? 'rotate(180deg)' : 'none' }}>
+          expand_more
+        </span>
+      </button>
+
+      {open && (
+        <div style={{
+          position: 'absolute', top: 'calc(100% + 4px)', left: 0, zIndex: 50,
+          background: 'var(--bg-default)',
+          border: '1px solid var(--divider)',
+          borderRadius: 'var(--radius-base)',
+          boxShadow: '0 4px 16px rgba(0,0,0,0.12)',
+          width: 260,
+          display: 'flex', flexDirection: 'column',
+          overflow: 'hidden',
+        }}>
+          {/* Search input */}
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 8,
+            padding: '8px 12px',
+            borderBottom: '1px solid var(--divider)',
+          }}>
+            <span className="ico" style={{ fontSize: 16, color: 'var(--icon-subtle)', flexShrink: 0 }}>search</span>
+            <input
+              ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Search sites…"
+              style={{
+                flex: 1, border: 0, outline: 'none', background: 'transparent',
+                font: '400 0.875rem/1.43 var(--font-inter)',
+                color: 'var(--fg-1)',
+              }}
+            />
+            {query && (
+              <button onClick={() => setQuery('')} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, color: 'var(--icon-subtle)', display: 'flex' }}>
+                <span className="ico" style={{ fontSize: 16 }}>close</span>
+              </button>
+            )}
+          </div>
+
+          {/* Options list */}
+          <div style={{ maxHeight: 280, overflowY: 'auto' }}>
+            {filtered.length === 0 ? (
+              <div style={{ padding: '12px 16px', font: '400 0.875rem/1.43 var(--font-inter)', color: 'var(--fg-disabled)', textAlign: 'center' }}>
+                No sites match "{query}"
+              </div>
+            ) : filtered.map((sd) => {
+              const isActive = sd.site.id === activeId
+              return (
+                <button
+                  key={sd.site.id}
+                  onClick={() => { onChange(sd.site.id); setOpen(false); setQuery('') }}
+                  style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                    width: '100%', appearance: 'none', border: 0,
+                    padding: '9px 16px',
+                    background: isActive ? 'var(--nav-active-bg)' : 'transparent',
+                    font: `${isActive ? '500' : '400'} 0.875rem/1.43 var(--font-inter)`,
+                    color: isActive ? 'var(--brand-600)' : 'var(--fg-1)',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    transition: 'background var(--duration-shortest) var(--easing-standard)',
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'var(--bg-paper-elev-1)' }}
+                  onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLButtonElement).style.background = 'transparent' }}
+                >
+                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{sd.site.name}</span>
+                  {isActive && <span className="ico" style={{ fontSize: 16, flexShrink: 0, color: 'var(--brand-600)' }}>check</span>}
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }
 
 function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
@@ -173,35 +336,10 @@ function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
     <div style={{ marginBottom: 28 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ font: '500 0.875rem/1 var(--font-inter)', color: 'var(--fg-2)' }}>Site:</span>
-        <div style={{
-          display: 'inline-flex',
-          border: '1px solid var(--secondary-outlined-border)',
-          borderRadius: 'var(--radius-base)',
-          overflow: 'hidden',
-        }}>
-          {sites.map((sd, i) => {
-            const isActive = sd.site.id === activeId
-            return (
-              <button
-                key={sd.site.id}
-                onClick={() => onChange(sd.site.id)}
-                style={{
-                  appearance: 'none', border: 0,
-                  borderLeft: i > 0 ? '1px solid var(--secondary-outlined-border)' : 'none',
-                  background: isActive ? 'var(--brand-600)' : 'var(--bg-default)',
-                  padding: '8px 16px',
-                  font: '500 0.875rem/1 var(--font-inter)',
-                  color: isActive ? '#fff' : 'var(--fg-2)',
-                  cursor: 'pointer',
-                  whiteSpace: 'nowrap',
-                  transition: 'background var(--duration-shortest) var(--easing-standard)',
-                }}
-              >
-                {sd.site.name}
-              </button>
-            )
-          })}
-        </div>
+        {sites.length <= PILL_THRESHOLD
+          ? <SiteSelectorPills sites={sites} activeId={activeId} onChange={onChange} />
+          : <SiteSelectorDropdown sites={sites} activeId={activeId} onChange={onChange} />
+        }
       </div>
       <p style={{ margin: '8px 0 0', font: 'var(--type-caption)', color: 'var(--fg-2)' }}>
         Your permissions can differ at each site.
@@ -230,10 +368,17 @@ export default function App() {
       </>
     )
   }
-  const activeSiteData = SITES_DATA.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
+  const [manySites, setManySites] = useState(false)
+  const allSites = manySites ? [...SITES_DATA, ...EXTRA_SITES] : SITES_DATA
+  const activeSiteData = allSites.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
 
   function handleAskAdmin() {
     window.open(`mailto:admin@cubx.com?subject=${encodeURIComponent('Permission inquiry')}`)
+  }
+
+  function handleToggleManySites() {
+    setManySites((v) => !v)
+    setActiveSiteId(primaryId)
   }
 
   return (
@@ -256,19 +401,44 @@ export default function App() {
             </div>
 
             {/* Site selector */}
-            <SiteSelector sites={SITES_DATA} activeId={activeSiteId} onChange={setActiveSiteId} />
+            <SiteSelector sites={allSites} activeId={activeSiteId} onChange={setActiveSiteId} />
 
             {/* Permission sections */}
             <MyPermissionsPage siteData={activeSiteData} />
 
             {/* Quick Check */}
-            <QuickCheck activeSiteId={activeSiteId} sitesData={SITES_DATA} />
+            <QuickCheck activeSiteId={activeSiteId} sitesData={allSites} />
 
             {/* Site tree */}
             <SiteTree siteData={activeSiteData} />
           </div>
         </div>
       </main>
+
+      {/* ── Demo toggle: few vs many sites ── */}
+      <button
+        onClick={handleToggleManySites}
+        style={{
+          position: 'fixed', bottom: 24, right: 24, zIndex: 9999,
+          display: 'flex', alignItems: 'center', gap: 8,
+          padding: '10px 16px',
+          background: 'var(--bg-default)',
+          border: '1px solid var(--divider)',
+          borderRadius: 100,
+          boxShadow: '0 2px 12px rgba(0,0,0,0.15)',
+          font: '500 0.8125rem/1 var(--font-inter)',
+          color: 'var(--fg-2)',
+          cursor: 'pointer',
+          transition: 'box-shadow 150ms',
+        }}
+        onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.2)')}
+        onMouseLeave={(e) => (e.currentTarget.style.boxShadow = '0 2px 12px rgba(0,0,0,0.15)')}
+      >
+        <span className="ico" style={{ fontSize: 16, color: 'var(--brand-600)' }}>
+          {manySites ? 'view_list' : 'dashboard'}
+        </span>
+        {manySites ? `${allSites.length} sites — switch to few` : `${allSites.length} sites — switch to many`}
+      </button>
     </div>
   )
 }
