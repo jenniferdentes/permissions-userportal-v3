@@ -7,13 +7,27 @@ interface ActionInfo {
   key: 'onboard' | 'offboard' | 'edit'
   icon: string
   title: string
+  approveTitle: string
   desc: string
+  approveDesc: string
 }
 
 const ACTIONS: ActionInfo[] = [
-  { key: 'onboard',  icon: 'person_add',      title: 'Onboard a user',  desc: 'Bring someone new onto your team' },
-  { key: 'offboard', icon: 'person_remove',    title: 'Offboard a user', desc: "End a person's employment" },
-  { key: 'edit',     icon: 'manage_accounts',  title: 'Edit a user',     desc: 'Update profiles & roles' },
+  {
+    key: 'onboard',  icon: 'person_add',
+    title: 'Onboard a user',         approveTitle: 'Approve an onboard request',
+    desc: 'Bring someone new onto your team', approveDesc: 'Authorize when a teammate submits an onboarding',
+  },
+  {
+    key: 'offboard', icon: 'person_remove',
+    title: 'Offboard a user',        approveTitle: 'Approve an offboard request',
+    desc: "End a person's employment",       approveDesc: 'Authorize when a teammate submits an offboarding',
+  },
+  {
+    key: 'edit',     icon: 'manage_accounts',
+    title: 'Edit a user',            approveTitle: 'Approve an edit request',
+    desc: 'Update profiles & roles',         approveDesc: 'Authorize when a teammate submits a profile edit',
+  },
 ]
 
 // ─── JobChips ─────────────────────────────────────────────────────────────────
@@ -70,9 +84,12 @@ interface ActionCardProps {
   action: ActionInfo
   allowed: boolean
   jobs: string[]
+  mode: 'perform' | 'approve'
 }
 
-function ActionCard({ action, allowed, jobs }: ActionCardProps) {
+function ActionCard({ action, allowed, jobs, mode }: ActionCardProps) {
+  const title = mode === 'approve' ? action.approveTitle : action.title
+  const desc  = mode === 'approve' ? action.approveDesc  : action.desc
   return (
     <div style={{
       flex: '1 0 0',
@@ -96,8 +113,8 @@ function ActionCard({ action, allowed, jobs }: ActionCardProps) {
           <h3 style={{
             margin: 0, font: 'var(--type-subtitle1)', letterSpacing: 'var(--type-subtitle1-tracking)',
             color: allowed ? 'var(--fg-1)' : 'var(--fg-2)',
-          }}>{action.title}</h3>
-          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: allowed ? 'var(--fg-2)' : 'var(--fg-disabled)' }}>{action.desc}</p>
+          }}>{title}</h3>
+          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: allowed ? 'var(--fg-2)' : 'var(--fg-disabled)' }}>{desc}</p>
         </div>
       </div>
 
@@ -160,7 +177,7 @@ function Section({ icon, title, subtitle, mode, siteData }: SectionProps) {
           const perm = siteData.permissions[action.key]
           const allowed = mode === 'perform' ? perm.canPerform : perm.canApprove
           const jobs = mode === 'perform' ? perm.performScopes : perm.approveScopes
-          return <ActionCard key={action.key} action={action} allowed={allowed} jobs={jobs} />
+          return <ActionCard key={action.key} action={action} allowed={allowed} jobs={jobs} mode={mode} />
         })}
       </div>
     </div>
