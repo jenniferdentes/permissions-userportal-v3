@@ -3,7 +3,8 @@ import Tooltip from '@mui/material/Tooltip'
 import IconButton from '@mui/material/IconButton'
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined'
 import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined'
-import { useColorScheme } from '@mui/material/styles'
+import { useColorScheme, useTheme } from '@mui/material/styles'
+import useMediaQuery from '@mui/material/useMediaQuery'
 import CompanySettings from './components/CompanySettings'
 import { SITES_DATA, EXTRA_SITES } from './data'
 import type { SiteData } from './types'
@@ -332,13 +333,16 @@ function SiteSelectorDropdown({ sites, activeId, onChange }: SiteSelectorProps) 
 }
 
 function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
+  const isMobile = useMediaQuery(useTheme().breakpoints.down('md'))
+  const useDropdown = isMobile || sites.length > PILL_THRESHOLD
+
   return (
     <div style={{ marginBottom: 28 }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
         <span style={{ font: '500 0.875rem/1 var(--font-inter)', color: 'var(--fg-2)' }}>Site:</span>
-        {sites.length <= PILL_THRESHOLD
-          ? <SiteSelectorPills sites={sites} activeId={activeId} onChange={onChange} />
-          : <SiteSelectorDropdown sites={sites} activeId={activeId} onChange={onChange} />
+        {useDropdown
+          ? <SiteSelectorDropdown sites={sites} activeId={activeId} onChange={onChange} />
+          : <SiteSelectorPills sites={sites} activeId={activeId} onChange={onChange} />
         }
       </div>
       <p style={{ margin: '8px 0 0', font: 'var(--type-caption)', color: 'var(--fg-2)' }}>
