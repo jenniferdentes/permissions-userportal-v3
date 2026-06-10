@@ -213,7 +213,7 @@ function SiteSelector({ sites, activeId, onChange }: SiteSelectorProps) {
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 export default function App() {
-  const [page, setPage] = useState<'permissions' | 'company-settings'>('company-settings')
+  const [page, setPage] = useState<'permissions' | 'company-settings'>('permissions')
   const primaryId = SITES_DATA.find((s) => s.site.isPrimary)?.site.id ?? SITES_DATA[0].site.id
   const [activeSiteId, setActiveSiteId] = useState(primaryId)
 
