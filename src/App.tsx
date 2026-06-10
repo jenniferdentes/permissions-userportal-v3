@@ -373,7 +373,8 @@ export default function App() {
     )
   }
   const [manySites, setManySites] = useState(false)
-  const allSites = manySites ? [...SITES_DATA, ...EXTRA_SITES] : SITES_DATA
+  const FEW_SITES = [...SITES_DATA, ...EXTRA_SITES.slice(0, 5)]
+  const allSites = manySites ? [...SITES_DATA, ...EXTRA_SITES] : FEW_SITES
   const activeSiteData = allSites.find((s) => s.site.id === activeSiteId) ?? SITES_DATA[0]
 
   function handleAskAdmin() {
