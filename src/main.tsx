@@ -8,7 +8,7 @@ import portalTheme from './theme'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <ThemeProvider theme={portalTheme} defaultMode="light">
+    <ThemeProvider theme={portalTheme} defaultMode="dark">
       <CssBaseline />
       <App />
     </ThemeProvider>
