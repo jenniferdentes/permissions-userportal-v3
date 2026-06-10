@@ -48,6 +48,50 @@
   --type-caption-tracking: 0.025rem;
   --avatar-periwinkle-bg: #E0E1FA;
   --avatar-periwinkle-fg: #6267E6;
+
+  /* Semantic status tokens */
+  --status-success-bg:     #edfcf2;
+  --status-success-text:   #084c2e;
+  --status-success-border: rgba(22, 179, 100, 0.3);
+  --status-success-icon:   #16b364;
+  --status-error-bg:       #fcf4f2;
+  --status-error-text:     #a63224;
+  --status-warning-icon:   #ef6c00;
+  --status-warning-text:   #663c00;
+
+  /* Nav active state */
+  --nav-active-bg: #f7f8fc;
+}
+
+/* ─── Dark mode variable overrides ──────────────────────────────────────────── */
+.dark {
+  --fg-1:       #f2f4f7;
+  --fg-2:       #dae1ef;
+  --fg-disabled:#98a1b2;
+  --icon-base:  #98a1b2;
+  --icon-strong:#eaecf0;
+  --icon-subtle:#667085;
+  --bg-default: #222629;
+  --bg-paper-elev-1: #15191c;
+  --divider:    #313538;
+  --secondary:  #e8e9f2;
+  --secondary-outlined-border: #5a5d5f;
+  --brand-50:   rgba(108, 112, 175, 0.15);
+  --brand-100:  rgba(108, 112, 175, 0.2);
+  --brand-300:  rgba(108, 112, 175, 0.4);
+  --brand-400:  #9ba6dc;
+  --brand-600:  #3c91ff;
+
+  --status-success-bg:     rgba(60, 203, 127, 0.12);
+  --status-success-text:   #3ccb7f;
+  --status-success-border: rgba(60, 203, 127, 0.3);
+  --status-success-icon:   #3ccb7f;
+  --status-error-bg:       rgba(222, 82, 67, 0.12);
+  --status-error-text:     #f0a69e;
+  --status-warning-icon:   #ffa726;
+  --status-warning-text:   #ffb74d;
+
+  --nav-active-bg: rgba(60, 145, 255, 0.12);
 }
 
 .ico {
@@ -76,8 +120,9 @@
     box-sizing: border-box;
   }
   body {
-    @apply bg-gray-50 antialiased;
+    @apply antialiased;
     font-family: var(--font-inter);
     color: var(--fg-1);
+    background-color: var(--portal-elevation-1);
   }
 }

@@ -7,17 +7,17 @@ function getBadges(relation: TreeRelation): Array<{ label: string; bg: string; c
   switch (relation) {
     case 'parent':
       return [
-        { label: 'Out of Scope', bg: '#e8e9f2', color: '#616a7e' },
-        { label: 'Above you',    bg: '#ffa726', color: '#fff'     },
+        { label: 'Out of Scope', bg: 'var(--brand-100)', color: 'var(--fg-2)' },
+        { label: 'Above you',    bg: '#ffa726',           color: '#fff'        },
       ]
     case 'self':
-      return [{ label: 'You', bg: '#16b364', color: '#fff' }]
+      return [{ label: 'You', bg: 'var(--status-success-icon)', color: '#fff' }]
     case 'child-in-reach':
-      return [{ label: 'In Reach', bg: '#d3f8df', color: '#084c2e' }]
+      return [{ label: 'In Reach', bg: 'var(--status-success-bg)', color: 'var(--status-success-text)' }]
     case 'child-approve-only':
-      return [{ label: 'Approve Requests Only', bg: '#cce3f1', color: '#0071ba' }]
+      return [{ label: 'Approve Requests Only', bg: 'var(--portal-accent6-light)', color: 'var(--portal-accent6-dark)' }]
     case 'child-out-of-scope':
-      return [{ label: 'Out of Scope', bg: '#e8e9f2', color: '#616a7e' }]
+      return [{ label: 'Out of Scope', bg: 'var(--brand-100)', color: 'var(--fg-2)' }]
   }
 }
 
@@ -45,13 +45,13 @@ function NodeRow({ relation, name }: { relation: TreeRelation; name: string }) {
     <div style={{
       display: 'flex', alignItems: 'center', gap: 8,
       padding: '8px 12px', borderRadius: 8,
-      border: `1px solid ${isSelf ? 'rgba(46,125,50,0.5)' : '#d0d5dd'}`,
-      background: isSelf ? '#edfcf2' : isGhosted ? '#f0f2f9' : '#ffffff',
+      border: `1px solid ${isSelf ? 'var(--status-success-border)' : 'var(--divider)'}`,
+      background: isSelf ? 'var(--status-success-bg)' : isGhosted ? 'var(--bg-paper-elev-1)' : 'var(--bg-default)',
     }}>
       {isSelf && (
         <span
           className="ico"
-          style={{ fontSize: 18, color: '#16b364', flexShrink: 0, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
+          style={{ fontSize: 18, color: 'var(--status-success-icon)', flexShrink: 0, fontVariationSettings: "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24" }}
         >
           star
         </span>
@@ -59,7 +59,7 @@ function NodeRow({ relation, name }: { relation: TreeRelation; name: string }) {
       <span style={{
         flex: 1, minWidth: 0,
         font: '400 0.875rem/1.43 var(--font-inter)',
-        color: isSelf ? '#084c2e' : isGhosted ? '#9aa2b2' : '#202938',
+        color: isSelf ? 'var(--status-success-text)' : isGhosted ? 'var(--fg-disabled)' : 'var(--fg-1)',
         overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
       }}>
         {name}
@@ -73,7 +73,7 @@ function NodeRow({ relation, name }: { relation: TreeRelation; name: string }) {
 
 // ─── Connector lines ──────────────────────────────────────────────────────────
 
-const LINE_COLOR = '#d0d5dd'
+const LINE_COLOR = 'var(--divider)'
 const LINE_X = 22
 
 function ConnectorStraight() {
@@ -126,8 +126,8 @@ export function SiteTree({ siteData }: Props) {
 
   return (
     <div style={{
-      background: '#fff',
-      border: '1px solid #eaecf0',
+      background: 'var(--bg-default)',
+      border: '1px solid var(--divider)',
       borderRadius: 12,
       boxShadow: '0 1px 1px rgba(16,24,40,0.05)',
       padding: 24,
@@ -138,7 +138,7 @@ export function SiteTree({ siteData }: Props) {
         <h2 style={{
           margin: 0,
           font: '600 1rem/1.75 var(--font-inter)', letterSpacing: '0.15px',
-          color: '#202938',
+          color: 'var(--fg-1)',
         }}>
           Where you can act at {site.name}
         </h2>
@@ -160,7 +160,7 @@ export function SiteTree({ siteData }: Props) {
           <span className="ico" style={{ fontSize: 18 }}>search</span>
         </button>
       </div>
-      <p style={{ margin: '0 0 12px', font: '400 0.875rem/1.43 var(--font-inter)', color: '#616a7e' }}>
+      <p style={{ margin: '0 0 12px', font: '400 0.875rem/1.43 var(--font-inter)', color: 'var(--fg-2)' }}>
         Sites where your permissions extend, based on your role here. Hover any badge to learn what it means.
       </p>
 
@@ -172,7 +172,7 @@ export function SiteTree({ siteData }: Props) {
           marginBottom: 12,
           border: '1px solid var(--brand-300)',
           borderRadius: 8,
-          background: '#fff',
+          background: 'var(--bg-default)',
         }}>
           <span className="ico" style={{ fontSize: 18, color: 'var(--icon-subtle)', flexShrink: 0 }}>search</span>
           <input

@@ -65,15 +65,15 @@ function Narrative({ permissions, siteName, userName }: { permissions: SitePermi
   const approveActions = ALL_ACTIONS.filter(k => permissions[k].canApprove)
 
   const SiteName = (
-    <span className="font-semibold text-[#6a6faf] underline decoration-dotted underline-offset-2">
+    <span className="font-semibold text-[var(--brand-400)] underline decoration-dotted underline-offset-2">
       {siteName}
     </span>
   )
 
   if (!performActions.length && !approveOnlyActions.length) {
     return (
-      <p className="text-base text-[#202938] leading-normal">
-        Hey <span className="font-semibold text-[#6a6faf]">{userName}</span>.{' '}
+      <p className="text-base text-[var(--fg-1)] leading-normal">
+        Hey <span className="font-semibold text-[var(--brand-400)]">{userName}</span>.{' '}
         You don't have any active permissions at {SiteName} yet.
       </p>
     )
@@ -86,8 +86,8 @@ function Narrative({ permissions, siteName, userName }: { permissions: SitePermi
   const allThreePerform = performActions.length === 3
 
   return (
-    <p className="text-base text-[#202938] leading-normal">
-      Hey <span className="font-semibold text-[#6a6faf]">{userName}</span>.{' '}
+    <p className="text-base text-[var(--fg-1)] leading-normal">
+      Hey <span className="font-semibold text-[var(--brand-400)]">{userName}</span>.{' '}
       {performActions.length > 0 && (
         <>You can {inlineBoldList(performVerbs)} users at {SiteName}.{' '}</>
       )}
@@ -155,32 +155,32 @@ function ScopePopover({
   }, [handleOutside, onClose])
 
   return createPortal(
-    <div ref={popoverRef} style={style} className="bg-white border border-[#eaecf0] rounded-xl shadow-xl">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#eaecf0]">
-        <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+    <div ref={popoverRef} style={style} className="bg-[var(--bg-default)] border border-[var(--divider)] rounded-xl shadow-xl">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[var(--divider)]">
+        <span className="text-xs font-semibold text-[var(--fg-2)] uppercase tracking-wider">
           {scopes.length} job titles
         </span>
         <button
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition-colors leading-none text-base"
+          className="text-[var(--icon-base)] hover:text-[var(--icon-strong)] transition-colors leading-none text-base"
           aria-label="Close"
         >
           ✕
         </button>
       </div>
-      <div className="px-3 py-2.5 border-b border-[#eaecf0]">
-        <div className="flex items-center gap-2 px-2.5 py-1.5 border border-gray-200 rounded-lg">
-          <IconSearch className="w-3.5 h-3.5 text-gray-400 flex-shrink-0" />
+      <div className="px-3 py-2.5 border-b border-[var(--divider)]">
+        <div className="flex items-center gap-2 px-2.5 py-1.5 border border-[var(--divider)] rounded-lg">
+          <IconSearch className="w-3.5 h-3.5 text-[var(--icon-subtle)] flex-shrink-0" />
           <input
             ref={inputRef}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search…"
-            className="flex-1 text-sm outline-none text-gray-800 placeholder-gray-400 bg-transparent"
+            className="flex-1 text-sm outline-none text-[var(--fg-1)] placeholder-[var(--icon-subtle)] bg-transparent"
           />
           {query && (
-            <button onClick={() => setQuery('')} className="text-gray-400 hover:text-gray-600 transition-colors text-sm leading-none">✕</button>
+            <button onClick={() => setQuery('')} className="text-[var(--icon-base)] hover:text-[var(--icon-strong)] transition-colors text-sm leading-none">✕</button>
           )}
         </div>
       </div>
@@ -188,13 +188,14 @@ function ScopePopover({
         {(() => {
           const filtered = query ? scopes.filter(t => t.toLowerCase().includes(query.toLowerCase())) : scopes
           return filtered.length === 0 ? (
-            <p className="text-sm text-gray-400 text-center py-3">No results</p>
+            <p className="text-sm text-[var(--fg-disabled)] text-center py-3">No results</p>
           ) : (
             <div className="flex flex-wrap gap-2">
               {filtered.map((title) => (
                 <span
                   key={title}
-                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-[rgba(0,0,0,0.08)] text-[#202938] tracking-[0.4px]"
+                  className="inline-flex items-center px-2 py-0.5 rounded-full text-xs tracking-[0.4px]"
+                  style={{ background: 'var(--mui-palette-action-selected)', color: 'var(--fg-1)' }}
                 >
                   {title}
                 </span>
@@ -224,7 +225,8 @@ function ScopeList({ scopes }: { scopes: string[] }) {
       {visible.map((title) => (
         <span
           key={title}
-          className="inline-flex items-center max-h-6 px-2 py-0.5 rounded-full text-xs bg-[rgba(0,0,0,0.08)] text-[#202938] tracking-[0.4px]"
+          className="inline-flex items-center max-h-6 px-2 py-0.5 rounded-full text-xs tracking-[0.4px]"
+          style={{ background: 'var(--mui-palette-action-selected)', color: 'var(--fg-1)' }}
         >
           {title}
         </span>
@@ -234,7 +236,7 @@ function ScopeList({ scopes }: { scopes: string[] }) {
           <button
             ref={triggerRef}
             onClick={() => setOpen((o) => !o)}
-            className="text-[13px] font-medium text-[#3a3e75] hover:opacity-70 transition-opacity leading-6"
+            className="text-[13px] font-medium text-[var(--brand-600)] hover:opacity-70 transition-opacity leading-6"
           >
             {open ? '− hide' : `+ ${remaining} more`}
           </button>
@@ -255,7 +257,10 @@ function ScopeList({ scopes }: { scopes: string[] }) {
 
 function YesBadge() {
   return (
-    <span className="inline-flex items-center px-3 py-0.5 rounded-full text-[13px] font-semibold bg-[#edfcf2] text-[#095c37]">
+    <span
+      className="inline-flex items-center px-3 py-0.5 rounded-full text-[13px] font-semibold"
+      style={{ background: 'var(--status-success-bg)', color: 'var(--status-success-text)' }}
+    >
       Yes
     </span>
   )
@@ -263,7 +268,10 @@ function YesBadge() {
 
 function NoBadge() {
   return (
-    <span className="inline-flex items-center px-3 py-0.5 rounded-full text-[13px] font-semibold bg-[#fcf4f2] text-[#a63224]">
+    <span
+      className="inline-flex items-center px-3 py-0.5 rounded-full text-[13px] font-semibold"
+      style={{ background: 'var(--status-error-bg)', color: 'var(--status-error-text)' }}
+    >
       No
     </span>
   )
@@ -278,10 +286,10 @@ export function PermissionsTable({ siteName, permissions, userName }: Props) {
   })
 
   return (
-    <div className="bg-white rounded-xl border border-[#eaecf0] shadow-[0px_1px_1px_rgba(16,24,40,0.05)] flex flex-col gap-4 p-6">
+    <div className="bg-[var(--bg-default)] rounded-xl border border-[var(--divider)] shadow-[0px_1px_1px_rgba(16,24,40,0.05)] flex flex-col gap-4 p-6">
 
       {/* Title */}
-      <h2 className="text-base font-semibold text-[#202938] tracking-[0.15px] leading-7">
+      <h2 className="text-base font-semibold text-[var(--fg-1)] tracking-[0.15px] leading-7">
         What you can do at {siteName}
       </h2>
 
@@ -289,17 +297,17 @@ export function PermissionsTable({ siteName, permissions, userName }: Props) {
       <Narrative permissions={permissions} siteName={siteName} userName={userName} />
 
       {/* Table */}
-      <div className="border border-[#eaecf0] rounded-xl overflow-hidden">
+      <div className="border border-[var(--divider)] rounded-xl overflow-hidden">
         <table className="w-full border-collapse">
           <thead>
             <tr>
-              <th className="bg-[#f7f8fc] border-b border-[#eaecf0] text-left text-sm font-medium text-[#616a7e] px-4 py-3 w-[380px] rounded-tl-xl">
+              <th className="bg-[var(--bg-paper-elev-1)] border-b border-[var(--divider)] text-left text-sm font-medium text-[var(--fg-2)] px-4 py-3 w-[380px] rounded-tl-xl">
                 Action
               </th>
-              <th className="bg-[#f7f8fc] border-b border-[#eaecf0] text-left text-sm font-medium text-[#616a7e] px-4 py-3">
+              <th className="bg-[var(--bg-paper-elev-1)] border-b border-[var(--divider)] text-left text-sm font-medium text-[var(--fg-2)] px-4 py-3">
                 Do it yourself
               </th>
-              <th className="bg-[#f7f8fc] border-b border-[#eaecf0] text-left text-sm font-medium text-[#616a7e] px-4 py-3 rounded-tr-xl">
+              <th className="bg-[var(--bg-paper-elev-1)] border-b border-[var(--divider)] text-left text-sm font-medium text-[var(--fg-2)] px-4 py-3 rounded-tr-xl">
                 Approve for others
               </th>
             </tr>
@@ -311,16 +319,16 @@ export function PermissionsTable({ siteName, permissions, userName }: Props) {
               const isLast = idx === visibleActions.length - 1
 
               return (
-                <tr key={key} className={!isLast ? 'border-b border-[#eaecf0]' : ''}>
+                <tr key={key} className={!isLast ? 'border-b border-[var(--divider)]' : ''}>
                   {/* Action */}
                   <td className="px-4 pt-4 pb-[17px] w-[380px] align-middle">
                     <div className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-[#edfcf2] flex items-center justify-center text-[#095c37]">
+                      <div className="flex-shrink-0 w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: 'var(--status-success-bg)', color: 'var(--status-success-text)' }}>
                         <Icon className="w-5 h-5" />
                       </div>
                       <div>
-                        <div className="text-base font-semibold text-[#202938] tracking-[0.15px] leading-7">{label}</div>
-                        <div className="text-sm text-[#616a7e] leading-5">{description}</div>
+                        <div className="text-base font-semibold text-[var(--fg-1)] tracking-[0.15px] leading-7">{label}</div>
+                        <div className="text-sm text-[var(--fg-2)] leading-5">{description}</div>
                       </div>
                     </div>
                   </td>

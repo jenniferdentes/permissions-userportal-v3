@@ -32,7 +32,7 @@ function JobChips({ jobs }: { jobs: string[] }) {
   if (jobs.length === 1 && jobs[0] === 'All job titles') {
     return (
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-        <span style={{ ...chipBase, border: '1px solid #CFE9D7', background: '#E7F4EA', color: '#1B7A43' }}>
+        <span style={{ ...chipBase, border: '1px solid var(--status-success-border)', background: 'var(--status-success-bg)', color: 'var(--status-success-text)' }}>
           All job titles
         </span>
       </div>
@@ -46,7 +46,7 @@ function JobChips({ jobs }: { jobs: string[] }) {
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
       {visible.map((j) => (
-        <span key={j} style={{ ...chipBase, border: '1px solid #d0d5dd', background: 'var(--bg-default)', color: 'var(--secondary)' }}>
+        <span key={j} style={{ ...chipBase, border: '1px solid var(--divider)', background: 'var(--bg-default)', color: 'var(--secondary)' }}>
           {j}
         </span>
       ))}
@@ -77,17 +77,17 @@ function ActionCard({ action, allowed, jobs }: ActionCardProps) {
     <div style={{
       flex: '1 0 0',
       borderRadius: 12,
-      border: '1px solid #eaecf0',
+      border: '1px solid var(--divider)',
       padding: 18,
       display: 'flex', flexDirection: 'column',
-      background: allowed ? 'var(--bg-default)' : '#fcfbfd',
+      background: allowed ? 'var(--bg-default)' : 'var(--mui-palette-background-paper)',
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{
           flexShrink: 0, width: 36, height: 36, borderRadius: 8,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          background: allowed ? '#E7F4EA' : 'var(--bg-paper-elev-1)',
-          color: allowed ? '#1B7A43' : 'var(--icon-subtle)',
+          background: allowed ? 'var(--status-success-bg)' : 'var(--bg-paper-elev-1)',
+          color: allowed ? 'var(--status-success-text)' : 'var(--icon-subtle)',
           border: allowed ? 'none' : '1px solid var(--divider)',
         }}>
           <span className="ico" style={{ fontSize: 20 }}>{action.icon}</span>
@@ -95,18 +95,18 @@ function ActionCard({ action, allowed, jobs }: ActionCardProps) {
         <div>
           <h3 style={{
             margin: 0, font: 'var(--type-subtitle1)', letterSpacing: 'var(--type-subtitle1-tracking)',
-            color: allowed ? 'var(--fg-1)' : '#616a7e',
+            color: allowed ? 'var(--fg-1)' : 'var(--fg-2)',
           }}>{action.title}</h3>
-          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: allowed ? 'var(--fg-2)' : '#9aa2b2' }}>{action.desc}</p>
+          <p style={{ margin: '2px 0 0', font: 'var(--type-body2)', color: allowed ? 'var(--fg-2)' : 'var(--fg-disabled)' }}>{action.desc}</p>
         </div>
       </div>
 
       <div style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         font: '600 0.8125rem/1.125rem var(--font-inter)', whiteSpace: 'nowrap',
-        color: allowed ? '#084c2e' : '#9aa2b2',
+        color: allowed ? 'var(--status-success-text)' : 'var(--fg-disabled)',
       }}>
-        <span className="ico" style={{ fontSize: 17, color: allowed ? '#2E9E5B' : '#9aa2b2' }}>
+        <span className="ico" style={{ fontSize: 17, color: allowed ? 'var(--status-success-icon)' : 'var(--fg-disabled)' }}>
           {allowed ? 'check_circle' : 'do_not_disturb_on'}
         </span>
         {allowed ? 'You can do this' : 'Not available for you'}
