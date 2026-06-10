@@ -1,7 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
+import Tooltip from '@mui/material/Tooltip'
 import type { SiteData, TreeRelation } from '../types'
 
 // ─── Badge config ─────────────────────────────────────────────────────────────
+
+const BADGE_TOOLTIPS: Record<string, string> = {
+  'You':                  'This is your site',
+  'In Reach':             'You can perform actions here based on your role',
+  'Approve Requests Only':'You can authorize requests here but not act directly',
+  'Above you':            'This site is above your level — out of your scope',
+  'Out of Scope':         "Your permissions don't extend to this site",
+}
 
 function getBadges(relation: TreeRelation): Array<{ label: string; bg: string; color: string }> {
   switch (relation) {
@@ -23,14 +32,16 @@ function getBadges(relation: TreeRelation): Array<{ label: string; bg: string; c
 
 function BadgePill({ label, bg, color }: { label: string; bg: string; color: string }) {
   return (
-    <span style={{
-      display: 'inline-flex', alignItems: 'center',
-      padding: '0 6.5px', borderRadius: 100,
-      font: '500 0.75rem/20px var(--font-inter)', letterSpacing: '0.14px',
-      background: bg, color, whiteSpace: 'nowrap',
-    }}>
-      {label}
-    </span>
+    <Tooltip title={BADGE_TOOLTIPS[label] ?? ''} placement="top" arrow>
+      <span style={{
+        display: 'inline-flex', alignItems: 'center',
+        padding: '0 6.5px', borderRadius: 100,
+        font: '500 0.75rem/20px var(--font-inter)', letterSpacing: '0.14px',
+        background: bg, color, whiteSpace: 'nowrap', cursor: 'default',
+      }}>
+        {label}
+      </span>
+    </Tooltip>
   )
 }
 
