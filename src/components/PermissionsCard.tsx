@@ -97,7 +97,7 @@ function ActionCard({ action, allowed, jobs, mode }: ActionCardProps) {
       border: '1px solid var(--divider)',
       padding: 18,
       display: 'flex', flexDirection: 'column',
-      background: allowed ? 'var(--bg-default)' : 'var(--mui-palette-background-paper)',
+      background: allowed ? 'var(--bg-default)' : 'var(--portal-bg-alpha-70)',
     }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div style={{
